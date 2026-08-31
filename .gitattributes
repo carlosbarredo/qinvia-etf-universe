@@ -13,6 +13,10 @@
 *.svg text eol=lf
 *.ipynb text eol=lf
 
+# Publication artefacts are generated from the Python research pipeline.
+reports/**/*.html linguist-generated=true
+reports/**/*.ipynb linguist-generated=true
+
 *.parquet binary
 *.png binary
 *.ico binary
