@@ -1,0 +1,170 @@
+{
+  "alias_series_consolidated": 5,
+  "asset_class_counts": {
+    "alternatives": 26,
+    "commodity": 105,
+    "crypto": 11,
+    "currency": 47,
+    "equity": 1358,
+    "fixed_income": 412,
+    "multi_asset": 16,
+    "real_estate": 41,
+    "unknown": 7
+  },
+  "beat_spy": {
+    "cagr": {
+      "count": 213,
+      "rate": 0.10528917449332674
+    },
+    "calmar": {
+      "count": 242,
+      "rate": 0.11962432031636185
+    },
+    "martin": {
+      "count": 217,
+      "rate": 0.10726643598615918
+    },
+    "sortino": {
+      "count": 201,
+      "rate": 0.09935739001482946
+    }
+  },
+  "beat_spy_all_four": {
+    "count": 59,
+    "rate": 0.0291646070192783
+  },
+  "beat_spy_cagr_and_martin": {
+    "count": 81,
+    "rate": 0.04003954522985665
+  },
+  "beat_spy_cagr_and_rwm": {
+    "count": 93,
+    "rate": 0.04597132970835393
+  },
+  "beat_spy_dbf": {
+    "count": 244,
+    "rate": 0.12061295106277806
+  },
+  "cohort_count": 2023,
+  "current_listing_count": 1956,
+  "curve_diagnostics": {
+    "common_end": "2026-08-28",
+    "common_start": "2022-03-01",
+    "curve_metrics": {
+      "etf_mean_all_available": {
+        "annualized_volatility": 0.12577851962986508,
+        "cagr": 0.1000666965945125,
+        "calmar": 0.5385363096189424,
+        "cumulative_return": 0.5349411363501733,
+        "martin": 1.5967502243447524,
+        "max_drawdown": -0.18581234878167774,
+        "observations": 1129,
+        "return_observations": 1128,
+        "sharpe": 0.8240312269621101,
+        "sortino": 1.1907187867100162,
+        "ulcer_index": 0.06266897293568642,
+        "years": 4.492905398468141
+      },
+      "etf_mean_fixed_complete": {
+        "annualized_volatility": 0.12558318563293935,
+        "cagr": 0.1000666965945125,
+        "calmar": 0.5399198790686967,
+        "cumulative_return": 0.5349411363501733,
+        "martin": 1.602914893374164,
+        "max_drawdown": -0.18533619611694374,
+        "observations": 1129,
+        "return_observations": 1128,
+        "sharpe": 0.8251186806322798,
+        "sortino": 1.1920785189942165,
+        "ulcer_index": 0.062427953603868734,
+        "years": 4.492905398468141
+      },
+      "etf_median_all_available": {
+        "annualized_volatility": 0.12505784275007822,
+        "cagr": 0.09905513310558223,
+        "calmar": 0.5145998358486058,
+        "cumulative_return": 0.528609796183585,
+        "martin": 1.539891033070992,
+        "max_drawdown": -0.19248963214734494,
+        "observations": 1129,
+        "return_observations": 1128,
+        "sharpe": 0.8206383748205618,
+        "sortino": 1.2007045377391883,
+        "ulcer_index": 0.06432606657111145,
+        "years": 4.492905398468141
+      },
+      "spy": {
+        "annualized_volatility": 0.17309612601991384,
+        "cagr": 0.15439657943977236,
+        "calmar": 0.6987899598663402,
+        "cumulative_return": 0.9061420253119108,
+        "martin": 2.0869826764965866,
+        "max_drawdown": -0.2209484799542688,
+        "observations": 1129,
+        "return_observations": 1128,
+        "sharpe": 0.91905881990092,
+        "sortino": 1.3439348506352629,
+        "ulcer_index": 0.07398076715181823,
+        "years": 4.492905398468141
+      }
+    },
+    "first_observation_more_than_7_days_after_cutoff": [],
+    "fixed_complete_constituents": 1967,
+    "interpretation": "Cross-sectional mean/median of buy-and-hold wealth rebased to 100 at the cutoff; not a daily-rebalanced tradable portfolio. Fixed-complete is the attrition sensitivity.",
+    "loaded_at_cutoff": 2023,
+    "missing_or_empty": [],
+    "requested_constituents": 2023
+  },
+  "cutoff": "2022-03-01",
+  "generated_at": "2026-08-30T08:10:27+00:00",
+  "historical_identity_count": 67,
+  "limitations": [
+    "Free Yahoo metadata does not provide a complete authoritative active/passive flag.",
+    "The 67 non-current identities all retain prices into July/August 2026 and are not a representative sample of long-dead products; survivorship bias remains material.",
+    "SPY is an intentional hurdle, not the economically correct benchmark for every asset class.",
+    "Adj Close is a total-return proxy and may not fully reconstruct all distributions or ETN events.",
+    "DBF is order-invariant and scale-invariant; it describes signed direction and breadth, not drawdown risk, economic severity, alpha or future performance.",
+    "RWM fixes cash as its reference. Substituting a risky benchmark would require a separate beta-neutral residual procedure.",
+    "RWM is undefined when relative-wealth Ulcer Index is zero; no artificial denominator floor is imposed.",
+    "FRED DFF is an idealised institutional cash accrual benchmark, not a guaranteed retail investable return after fees or taxes."
+  ],
+  "management_style_counts": {
+    "active_identified": 128,
+    "index_passive_identified": 413,
+    "not_determined": 1018,
+    "systematic_or_rules_based": 464
+  },
+  "methodology": {
+    "benchmark_alignment": "SPY on exact common sessions for each ETF",
+    "common_curve_window": "2022-03-01 to latest Yahoo session",
+    "cost_model": "QINVIA Historical Adaptive Cost and Slippage Model v1.0",
+    "cost_treatment": "Buy & Hold comparison; no fictitious switching cost under section 7",
+    "decision_metric": "Relative-Wealth Martin (RWM), with CAGR retained as economic context",
+    "descriptive_metrics": [
+      "CAGR",
+      "Sortino",
+      "Calmar",
+      "Martin",
+      "RWM"
+    ],
+    "performance_window": "Each ETF inception/first usable Yahoo session to its own last usable session",
+    "return_series": "Yahoo Adj Close total-return proxy",
+    "risk_free_rate": 0.0,
+    "rwm_cash_reference": "FRED DFF compounded on calendar days with Actual/360 and sampled on fund sessions",
+    "rwm_definition": "CAGR(W_fund/W_cash) divided by Ulcer Index(W_fund/W_cash)",
+    "supplementary_descriptor": "Signed Direction–Breadth Factor (DBF±) on daily log returns"
+  },
+  "minimum_daily_returns": 1008,
+  "qualifying_series_count": 2028,
+  "rwm": {
+    "beat_spy_count": 161,
+    "beat_spy_rate": 0.07958477508650519,
+    "cash_day_count_basis": "Actual/360",
+    "cash_first_date": "1954-07-01",
+    "cash_last_date": "2026-08-27",
+    "cash_reference": "FRED DFF Effective Federal Funds Rate",
+    "finite_score_count": 2023
+  },
+  "study_version": "etf_universe_1A",
+  "taxonomy_version": "etf_taxonomy_1.1"
+}

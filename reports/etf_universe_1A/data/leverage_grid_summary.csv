@@ -1,0 +1,6 @@
+initial_leverage,candidates,beat_cagr,beat_martin,beat_rwm_score,beat_cagr_and_rwm,beat_cagr_and_martin,beat_all_four,maintenance_breaches,ruined
+1.0,6,0,6,6,0,0,0,0,0
+1.25,6,4,5,5,3,3,1,0,0
+1.5,6,4,4,5,3,2,1,0,0
+1.75,6,4,4,3,2,2,0,0,0
+2.0,6,5,3,3,2,2,0,0,0

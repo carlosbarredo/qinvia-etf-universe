@@ -1,0 +1,5 @@
+request_symbol,analysis_status,usable_start,usable_end,reason,evidence_url
+FAIR,identity_mismatch,,,Yahoo resuelve Fair Oaks Income y no el ETF Newday registrado,https://www.sec.gov/Archives/edgar/data/1742912/000183988223033879/newday-485bbpos_121523.htm
+NVDL,identity_mismatch,,,Yahoo resuelve GraniteShares 2x Long NVDA Daily ETF y no el producto Tuttle registrado,https://query1.finance.yahoo.com/v8/finance/chart/NVDL?range=5d&interval=1d
+PWJ,usable,,,Los metadatos directos de Yahoo identifican Invesco S&P MidCap Momentum ETF,https://www.sec.gov/Archives/edgar/data/1209466/000088731809000245/0000887318-09-000245-index.htm
+RNEW,identity_mismatch,,,La serie de Yahoo corresponde a Ecofin US Renewables Infrastructure y no al ETF VanEck,https://www.vaneck.com/us/en/investments/green-infrastructure-etf-rnew/downloads/fundhistoprices/

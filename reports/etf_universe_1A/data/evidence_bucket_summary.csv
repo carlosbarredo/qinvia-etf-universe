@@ -1,0 +1,8 @@
+evidence_bucket,n,beat_spy_cagr,beat_spy_martin,beat_spy_rwm_score,beat_spy_cagr_and_rwm,beat_spy_cagr_and_martin,beat_spy_all_four,rate_all_four
+other_or_unresolved,575,63,57,51,27,24,18,0.03130434782608696
+systematic_static_beta,463,52,60,52,24,23,15,0.032397408207343416
+fixed_income_beta,356,0,40,0,0,0,0,0.0
+concentrated_equity_beta,274,56,21,28,18,13,10,0.0364963503649635
+other_asset_beta,186,15,5,4,4,4,4,0.021505376344086023
+intentional_management,139,14,25,15,9,8,6,0.04316546762589928
+broad_market_beta,30,13,9,11,11,9,6,0.2

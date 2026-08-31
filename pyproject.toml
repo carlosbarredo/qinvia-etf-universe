@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qinvia-etf-universe"
+version = "0.1.0"
+description = "Bilingual reproducible study of ETF exposure, intentional management, and performance versus SPY"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Carlos Barredo Lago" },
+]
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "pyarrow>=14",
+  "yfinance==1.7.0",
+]
+keywords = [
+  "etf",
+  "quantitative-finance",
+  "performance-measurement",
+  "relative-wealth",
+  "survivorship-bias",
+  "reproducible-research",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Financial and Insurance Industry",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Office/Business :: Financial :: Investment",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+[project.urls]
+Repository = "https://github.com/carlosbarredo/qinvia-etf-universe"
+Issues = "https://github.com/carlosbarredo/qinvia-etf-universe/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+research = ["matplotlib>=3.8", "nbformat>=5", "nbconvert>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
+testpaths = ["tests"]

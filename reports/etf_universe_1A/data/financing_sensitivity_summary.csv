@@ -1,0 +1,5 @@
+financing_spread,candidates,feasible_at_or_below_2x,matched_martin_better,matched_rwm_better,matched_all_three_risk_better,maintenance_breaches
+0.01,6,5,5,5,2,0
+0.015,6,5,4,4,1,0
+0.02,6,4,4,4,1,0
+0.025,6,4,4,3,1,0
