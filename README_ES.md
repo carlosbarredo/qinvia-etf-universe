@@ -2,7 +2,7 @@
 
 **Un estudio bilingüe y reproducible sobre exposición, gestión intencional y por qué SPY es tan difícil de batir.** El proyecto construye un universo auditable con datos gratuitos, separa la beta estrecha de los productos que gestionan deliberadamente riesgo o selección y compara cada ETF maduro con SPY durante su propio historial común exacto.
 
-[English](README.md) · [Informe en español](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.html) · [Informe en inglés](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A_EN.html) · [Notebook en español](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.ipynb) · [Metodología](docs/METHODOLOGY.md) · [Procedencia de los datos](DATA.md)
+[Estudio web](https://qinvia.com/es/research/etf-universe-exposure-skill) · [English](README.md) · [Informe en español](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.html) · [Informe en inglés](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A_EN.html) · [Notebook en español](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.ipynb) · [Metodología](docs/METHODOLOGY.md) · [Procedencia de los datos](DATA.md)
 
 ## La evidencia, de un vistazo
 

@@ -39,6 +39,8 @@ classifiers = [
 ]
 
 [project.urls]
+Homepage = "https://qinvia.com/research/etf-universe-exposure-skill"
+Spanish = "https://qinvia.com/es/research/etf-universe-exposure-skill"
 Repository = "https://github.com/carlosbarredo/qinvia-etf-universe"
 Issues = "https://github.com/carlosbarredo/qinvia-etf-universe/issues"
 
