@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import csv
-import fcntl
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - unavailable on Windows
+    fcntl = None
 import hashlib
 import json
 import logging
@@ -794,11 +797,12 @@ def main() -> int:
     configure_logging()
     RUNTIME_ROOT.mkdir(parents=True, exist_ok=True)
     lock_handle = LOCK_PATH.open("w", encoding="utf-8")
-    try:
-        fcntl.flock(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except BlockingIOError:
-        logging.error("Another universe collector is already running")
-        return 2
+    if fcntl is not None:
+        try:
+            fcntl.flock(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            logging.error("Another universe collector is already running")
+            return 2
 
     started = time.monotonic()
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -878,7 +882,8 @@ def main() -> int:
         update_status("failed", f"Error: {type(error).__name__}: {error}", failed_at=utc_now())
         return 1
     finally:
-        fcntl.flock(lock_handle, fcntl.LOCK_UN)
+        if fcntl is not None:
+            fcntl.flock(lock_handle, fcntl.LOCK_UN)
         lock_handle.close()
 
 

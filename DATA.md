@@ -13,7 +13,7 @@ The study endpoint is 27 August 2026. The maturity cutoff admits economic produc
 
 ## Published evidence
 
-`reports/etf_universe_1A/data/` contains the frozen derived tables used to inspect the report:
+`artifacts/etf-universe/` contains the frozen derived tables used to inspect the study:
 
 - the selected cohort and consolidated ticker aliases;
 - taxonomy and evidence buckets;

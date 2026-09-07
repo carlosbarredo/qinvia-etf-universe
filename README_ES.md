@@ -2,7 +2,7 @@
 
 **Un estudio bilingüe y reproducible sobre exposición, gestión intencional y por qué SPY es tan difícil de batir.** El proyecto construye un universo auditable con datos gratuitos, separa la beta estrecha de los productos que gestionan deliberadamente riesgo o selección y compara cada ETF maduro con SPY durante su propio historial común exacto.
 
-[Estudio web](https://qinvia.com/es/research/etf-universe-exposure-skill) · [English](README.md) · [Informe en español](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.html) · [Informe en inglés](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A_EN.html) · [Notebook en español](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.ipynb) · [Metodología](docs/METHODOLOGY.md) · [Procedencia de los datos](DATA.md)
+[Estudio web](https://qinvia.com/es/research/etf-universe-exposure-skill) · [Notebook en español](notebooks/etf_universe_es.ipynb) · [English notebook](notebooks/etf_universe_en.ipynb) · [English](README.md) · [Metodología](docs/METHODOLOGY.md) · [Procedencia de los datos](DATA.md)
 
 ## La evidencia, de un vistazo
 
@@ -24,20 +24,21 @@ Los resultados no demuestran que toda exposición estrecha sea inútil ni que ni
 5. **Exposición frente a intención.** Se estudian por separado el mercado amplio, la beta sectorial o temática, las reglas sistemáticas y la gestión intencional.
 6. **Pruebas de tensión.** Se incluyen estabilidad al punto de entrada, una escalera de apalancamiento con deuda fija, retorno igualado y sensibilidad al coste de financiación.
 
-## Informes y evidencia reproducible
+## Notebooks y evidencia reproducible
 
-Los HTML son publicaciones autocontenidas con todas las figuras integradas. Los notebooks equivalentes conservan la narrativa, las fórmulas, las tablas y la evidencia derivada congelada.
+Los notebooks bilingües son el formato principal de lectura en GitHub. Conservan la narrativa, las fórmulas, las tablas y la evidencia derivada congelada; la edición editorial extensa vive en Qinvia.
 
-| Idioma | Informe | Notebook |
+| Idioma | Notebook | Edición editorial |
 |---|---|---|
-| Español | [Abrir HTML](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.html) | [Abrir notebook](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A.ipynb) |
-| English | [Open HTML](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A_EN.html) | [Open notebook](reports/etf_universe_1A/QINVIA_ETF_UNIVERSE_STUDY_1A_EN.ipynb) |
+| Español | [Abrir notebook](notebooks/etf_universe_es.ipynb) | [Leer en Qinvia](https://qinvia.com/es/research/etf-universe-exposure-skill) |
+| English | [Open notebook](notebooks/etf_universe_en.ipynb) | [Read on Qinvia](https://qinvia.com/research/etf-universe-exposure-skill) |
 
 El repositorio incluye las tablas derivadas necesarias para inspeccionar los resultados publicados. No redistribuye los históricos brutos de Yahoo Finance ni el archivo fuente original de FRED DFF. Consulta [DATA.md](DATA.md).
 
 ## Instalación y pruebas
 
-La adquisición está diseñada para Linux o WSL porque los recolectores autónomos utilizan bloqueos POSIX.
+La adquisición funciona en Linux, WSL y Windows. Cuando está disponible se usa
+bloqueo POSIX; el paquete analítico y los tests son multiplataforma.
 
 ```bash
 git clone https://github.com/carlosbarredo/qinvia-etf-universe.git
@@ -57,7 +58,7 @@ PYTHONPATH=src python -m qinvia_etfs.universe_study
 python scripts/build_etf_universe_study.py
 ```
 
-El generador produce ambos idiomas desde una única fuente y deja los HTML y notebooks en `reports/etf_universe_1A/`.
+El generador produce ambas ediciones notebook desde una única fuente. Las tablas públicas derivadas viven en `artifacts/etf-universe/`.
 
 ## Alcance y limitaciones
 

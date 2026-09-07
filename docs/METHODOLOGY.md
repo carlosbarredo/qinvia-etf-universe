@@ -19,7 +19,7 @@ Los gastos corrientes del ETF, roll yield, financiación, fiscalidad, impacto in
 
 La especificación fue concebida como modelo vehicle-agnostic para estudios del S&P 500. En este proyecto se adopta como convención común para ETFs; cualquier calibración específica por liquidez, bolsa, activo o vehículo deberá presentarse como análisis adicional y no sustituirá silenciosamente la versión 1.0.
 
-## Criterio de comparación del universo 1A
+## Criterio de comparación del universo público
 
 El estudio conserva CAGR, Sortino, Calmar, Martin y Relative-Wealth Martin (RWM) en sus tablas descriptivas. Para evitar una decisión por votación entre ratios, la superioridad frente a SPY se determina principalmente comparando el RWM de cada ETF con el RWM de SPY sobre las mismas sesiones; CAGR se mantiene como contexto de crecimiento absoluto.
 

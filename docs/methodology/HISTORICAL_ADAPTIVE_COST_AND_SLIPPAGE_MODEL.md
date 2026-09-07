@@ -212,7 +212,7 @@ Recommended study wording:
 > slippage sensitivities. The model is vehicle-agnostic and should not be interpreted
 > as an exact reconstruction of SPY or S&P 500 futures.
 
-Every notebook, HTML report, executive summary, and manifest must link to this file
+Every notebook, executive summary, and manifest must link to this file
 and record:
 
 - specification version;
