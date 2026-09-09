@@ -1,25 +1,49 @@
 request_symbol,name,financing_spread,required_initial_leverage,feasible_at_or_below_2x,matched_martin_beats_spy,matched_rwm_beats_spy,matched_all_three_risk_beat_spy,illustrative_25pct_maintenance_breach,feasible_and_martin_better,feasible_and_rwm_better,feasible_and_all_three_risk_better
-DFAU,Dimensional US Core Equity Market ETF,0.01,1.02715550399774,True,True,True,False,False,True,True,False
-DFAU,Dimensional US Core Equity Market ETF,0.015,1.0282031225610104,True,True,True,False,False,True,True,False
-DFAU,Dimensional US Core Equity Market ETF,0.02,1.0293698083594094,True,True,True,False,False,True,True,False
-DFAU,Dimensional US Core Equity Market ETF,0.025,1.0306764896803167,True,True,False,False,False,True,False,False
-DUHP,Dimensional US High Profitability ETF,0.01,1.1963423044120214,True,True,True,False,False,True,True,False
-DUHP,Dimensional US High Profitability ETF,0.015,1.2074629535390584,True,True,True,False,False,True,True,False
-DUHP,Dimensional US High Profitability ETF,0.02,1.220224483211106,True,True,True,False,False,True,True,False
-DUHP,Dimensional US High Profitability ETF,0.025,1.2350148239011094,True,True,True,False,False,True,True,False
-HEQT,Simplify Hedged Equity ETF,0.01,1.857376337682071,True,True,True,True,False,True,True,True
-HEQT,Simplify Hedged Equity ETF,0.015,1.9668498754305839,True,False,False,False,False,False,False,False
-HEQT,Simplify Hedged Equity ETF,0.02,2.1123978952694684,False,False,False,False,False,False,False,False
-HEQT,Simplify Hedged Equity ETF,0.025,2.315296608047769,False,False,False,False,False,False,False,False
-JAVA,JPMorgan Active Value ETF,0.01,1.2278584687041039,True,True,True,False,False,True,True,False
-JAVA,JPMorgan Active Value ETF,0.015,1.2429127657516796,True,True,True,False,False,True,True,False
-JAVA,JPMorgan Active Value ETF,0.02,1.2605601643184154,True,True,True,False,False,True,True,False
-JAVA,JPMorgan Active Value ETF,0.025,1.2815267253583817,True,True,True,False,False,True,True,False
-SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.01,2.328477949212542,False,True,True,False,False,False,False,False
-SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.015,2.415162752140485,False,True,True,False,False,False,False,False
-SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.02,2.517386141819399,False,True,True,False,False,False,False,False
-SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.025,2.639668954144899,False,True,True,False,False,False,False,False
-TEQI,T. Rowe Price Equity Income ETF,0.01,1.1305972928482382,True,True,True,True,False,True,True,True
-TEQI,T. Rowe Price Equity Income ETF,0.015,1.1355626993429297,True,True,True,True,False,True,True,True
-TEQI,T. Rowe Price Equity Income ETF,0.02,1.1410946461936757,True,True,True,True,False,True,True,True
-TEQI,T. Rowe Price Equity Income ETF,0.025,1.147292853714196,True,True,True,True,False,True,True,True
+DFAU,Dimensional US Core Equity Market ETF,0.01,1.0351507460575413,True,True,False,False,False,True,False,False
+DFAU,Dimensional US Core Equity Market ETF,0.015,1.0365294934573168,True,True,False,False,False,True,False,False
+DFAU,Dimensional US Core Equity Market ETF,0.02,1.0380671163517181,True,True,False,False,False,True,False,False
+DFAU,Dimensional US Core Equity Market ETF,0.025,1.0397919654191885,True,False,False,False,False,False,False,False
+DIVO,Amplify CWP Enhanced Dividend Income ETF,0.01,1.3922955144857698,True,True,True,False,False,True,True,False
+DIVO,Amplify CWP Enhanced Dividend Income ETF,0.015,1.4080968020620812,True,True,True,False,False,True,True,False
+DIVO,Amplify CWP Enhanced Dividend Income ETF,0.02,1.426127972380774,True,True,True,False,False,True,True,False
+DIVO,Amplify CWP Enhanced Dividend Income ETF,0.025,1.4468697573840577,True,True,True,False,False,True,True,False
+DUHP,Dimensional US High Profitability ETF,0.01,1.2044480857358895,True,True,True,False,False,True,True,False
+DUHP,Dimensional US High Profitability ETF,0.015,1.2162437816836513,True,True,True,False,False,True,True,False
+DUHP,Dimensional US High Profitability ETF,0.02,1.2298104561201377,True,True,True,False,False,True,True,False
+DUHP,Dimensional US High Profitability ETF,0.025,1.2455748245904854,True,False,True,False,False,False,True,False
+FBCV,Fidelity Blue Chip Value ETF,0.01,1.330185253729712,True,True,True,False,False,True,True,False
+FBCV,Fidelity Blue Chip Value ETF,0.015,1.3443237985366727,True,True,True,False,False,True,True,False
+FBCV,Fidelity Blue Chip Value ETF,0.02,1.3602460025668468,True,True,True,False,False,True,True,False
+FBCV,Fidelity Blue Chip Value ETF,0.025,1.3783024401472201,True,True,True,False,False,True,True,False
+FLLV,Franklin Liberty U.S. Low Volatility ETF,0.01,1.375119994387719,True,True,True,False,False,True,True,False
+FLLV,Franklin Liberty U.S. Low Volatility ETF,0.015,1.3895354749866546,True,True,True,False,False,True,True,False
+FLLV,Franklin Liberty U.S. Low Volatility ETF,0.02,1.4059315403342938,True,True,True,False,False,True,True,False
+FLLV,Franklin Liberty U.S. Low Volatility ETF,0.025,1.4247214390975427,True,True,True,False,False,True,True,False
+FLV,American Century Focused Large Cap Value ETF,0.01,1.5478962658475126,True,True,True,False,False,True,True,False
+FLV,American Century Focused Large Cap Value ETF,0.015,1.566196977507345,True,True,True,False,False,True,True,False
+FLV,American Century Focused Large Cap Value ETF,0.02,1.586433283957264,True,True,True,False,False,True,True,False
+FLV,American Century Focused Large Cap Value ETF,0.025,1.6089168123934472,True,True,True,False,False,True,True,False
+HEQT,Simplify Hedged Equity ETF,0.01,1.8616862182687106,True,True,True,True,False,True,True,True
+HEQT,Simplify Hedged Equity ETF,0.015,1.973452860535547,True,False,False,False,False,False,False,False
+HEQT,Simplify Hedged Equity ETF,0.02,2.122688690442416,False,False,False,False,False,False,False,False
+HEQT,Simplify Hedged Equity ETF,0.025,2.3319544105001793,False,False,False,False,False,False,False,False
+JAVA,JPMorgan Active Value ETF,0.01,1.236795241439718,True,True,True,False,False,True,True,False
+JAVA,JPMorgan Active Value ETF,0.015,1.252739759026898,True,True,True,False,False,True,True,False
+JAVA,JPMorgan Active Value ETF,0.02,1.271480957996572,True,True,True,False,False,True,True,False
+JAVA,JPMorgan Active Value ETF,0.025,1.2938177760447076,True,True,True,False,False,True,True,False
+MBOX,Freedom Day Dividend ETF,0.01,1.1658924697628918,True,True,True,True,False,True,True,True
+MBOX,Freedom Day Dividend ETF,0.015,1.175934336573843,True,True,True,True,False,True,True,True
+MBOX,Freedom Day Dividend ETF,0.02,1.1876015352249667,True,True,True,True,False,True,True,True
+MBOX,Freedom Day Dividend ETF,0.025,1.2013179544737649,True,True,True,False,False,True,True,False
+RFDA,ALPS Dynamic US Dividend Advantage ETF,0.01,1.2892391647171424,True,True,True,False,False,True,True,False
+RFDA,ALPS Dynamic US Dividend Advantage ETF,0.015,1.29952239323181,True,True,False,False,False,True,False,False
+RFDA,ALPS Dynamic US Dividend Advantage ETF,0.02,1.311156316856704,True,False,False,False,False,False,False,False
+RFDA,ALPS Dynamic US Dividend Advantage ETF,0.025,1.3244077556179532,True,False,False,False,False,False,False,False
+SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.01,2.301768439220728,False,True,True,False,False,False,False,False
+SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.015,2.386305137613764,False,True,True,False,False,False,False,False
+SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.02,2.485942276651944,False,True,True,False,False,False,False,False
+SIXH,ETC 6 Meridian Hedged Equity Index Option ETF,0.025,2.6050555193322733,False,True,True,False,False,False,False,False
+TEQI,T. Rowe Price Equity Income ETF,0.01,1.126425309282977,True,True,True,True,False,True,True,True
+TEQI,T. Rowe Price Equity Income ETF,0.015,1.131251921306802,True,True,True,True,False,True,True,True
+TEQI,T. Rowe Price Equity Income ETF,0.02,1.1366314998040028,True,True,True,True,False,True,True,True
+TEQI,T. Rowe Price Equity Income ETF,0.025,1.1426618030183833,True,True,True,True,False,True,True,True

@@ -57,12 +57,22 @@ def load_financing_benchmark(path: Path) -> pd.Series:
 def classify_evidence_bucket(row: pd.Series) -> str:
     """Separate manager intent from static or concentrated beta exposure."""
 
+    if row["management_style"] == "mixed_or_changed_mandate":
+        return "mixed_mandate_not_attributed"
+    if row["management_style"] == "not_applicable_security":
+        return "non_fund_security"
     if row["management_style"] == "active_identified":
         return "intentional_management"
     if row["primary_strategy"] in DYNAMIC_STRATEGIES:
         return "intentional_management"
     if row["management_style"] == "systematic_or_rules_based":
         return "systematic_static_beta"
+    if row["management_style"] == "non_index_management_identified":
+        # SEC N-CEN establishes that the fund is not an index fund, but that
+        # fact alone does not prove a discretionary or dynamic process.
+        return "non_index_management"
+    if row["management_style"] == "static_exposure_or_trust":
+        return "static_exposure"
     if row["asset_class_refined"] == "equity" and row["exposure_type"] == "broad_equity":
         return "broad_market_beta"
     if row["asset_class_refined"] == "equity" and row["exposure_type"] in {

@@ -20,6 +20,7 @@ import pandas as pd
 
 from qinvia_etfs.benchmark import performance_metrics
 from qinvia_etfs.dbf import dbf_metrics
+from qinvia_etfs.management_style import MANAGEMENT_EVIDENCE_VERSION
 from qinvia_etfs.market import storage_key
 from qinvia_etfs.rwm import cash_wealth, load_cash_rates, relative_wealth_martin
 from qinvia_etfs.taxonomy import TAXONOMY_VERSION, classify_product
@@ -57,6 +58,73 @@ def add_taxonomy(frame: pd.DataFrame) -> pd.DataFrame:
         [classify_product(row.name, row.asset_classes) for row in frame.itertuples(index=False)]
     )
     return pd.concat([frame.reset_index(drop=True), taxonomy], axis=1)
+
+
+def apply_management_style_audit(frame: pd.DataFrame, audit_path: Path) -> pd.DataFrame:
+    """Overlay the complete, sourced management-style audit on the study cohort.
+
+    The audit is keyed to the canonical economic product. Historical ticker
+    aliases inherit the canonical decision, so every qualifying row receives
+    the same evidence-backed management label without duplicating research.
+    """
+
+    audit = pd.read_csv(audit_path, keep_default_na=False)
+    required = {
+        "request_symbol",
+        "management_style",
+        "management_confidence",
+        "management_source",
+        "management_evidence_version",
+        "evidence",
+        "source_url",
+        "review_note",
+    }
+    missing_columns = required.difference(audit.columns)
+    if missing_columns:
+        raise ValueError(f"Management audit lacks columns: {sorted(missing_columns)}")
+    if audit["request_symbol"].duplicated().any():
+        raise ValueError("Management audit contains duplicate request symbols")
+
+    expected = set(frame.loc[frame["analysis_primary"], "request_symbol"].astype(str))
+    observed = set(audit["request_symbol"].astype(str))
+    missing_symbols = sorted(expected.difference(observed))
+    extra_symbols = sorted(observed.difference(expected))
+    if missing_symbols or extra_symbols:
+        raise ValueError(
+            "Management audit must cover the canonical cohort exactly; "
+            f"missing={missing_symbols[:10]}, extra={extra_symbols[:10]}"
+        )
+    if audit["management_style"].eq("not_determined").any():
+        raise ValueError("Management audit still contains not_determined rows")
+
+    result = frame.copy()
+    result["management_style_name_based"] = result["management_style"]
+    result["management_confidence_name_based"] = result["management_confidence"]
+    result["management_audit_symbol"] = result["canonical_symbol"].astype(str)
+    rename = {
+        "request_symbol": "management_audit_symbol",
+        "evidence": "management_evidence",
+        "source_url": "management_source_url",
+        "review_note": "management_review_note",
+        "source_zip": "management_source_zip",
+    }
+    keep = [column for column in audit.columns if column != "name"]
+    evidence = audit[keep].rename(columns=rename)
+    result = result.drop(columns=["management_style", "management_confidence"]).merge(
+        evidence,
+        on="management_audit_symbol",
+        how="left",
+        validate="many_to_one",
+    )
+    if result["management_style"].isna().any():
+        missing = result.loc[result["management_style"].isna(), "request_symbol"].tolist()
+        raise ValueError(f"Management audit did not resolve qualifying rows: {missing[:10]}")
+    result["taxonomy_evidence"] = (
+        result["taxonomy_evidence"].astype(str)
+        + "|management_audit:"
+        + result["management_style"].astype(str)
+    )
+    return result
 
 
 def add_decision_flags(frame: pd.DataFrame) -> pd.DataFrame:
@@ -319,6 +387,7 @@ def build_common_period_curves(
 
 
 def selection_funnel(benchmark: pd.DataFrame, qualifying: pd.DataFrame, selected: pd.DataFrame, universe_manifest: dict[str, Any], market_summary: dict[str, Any]) -> pd.DataFrame:
+    after_aliases = int(qualifying["analysis_primary"].sum())
     return pd.DataFrame(
         [
             {"stage": "catalogue_identities", "count": int(universe_manifest.get("records", 0)), "unit": "identities"},
@@ -327,7 +396,8 @@ def selection_funnel(benchmark: pd.DataFrame, qualifying: pd.DataFrame, selected
             {"stage": "valid_yahoo_parquets", "count": int(market_summary.get("parquet_files_validated", 0)), "unit": "symbols"},
             {"stage": "comparable_with_spy", "count": int(market_summary.get("analyzed_symbol_count", len(benchmark))), "unit": "symbols"},
             {"stage": "qualifying_price_series_2022_03_01", "count": int(len(qualifying)), "unit": "symbols"},
-            {"stage": "economic_products_after_alias_consolidation", "count": int(len(selected)), "unit": "products"},
+            {"stage": "economic_products_after_alias_consolidation", "count": after_aliases, "unit": "products"},
+            {"stage": "etf_portfolios_after_product_type_review", "count": int(len(selected)), "unit": "products"},
         ]
     )
 
@@ -422,12 +492,17 @@ def run(
     universe_manifest_path: Path,
     market_summary_path: Path,
     cash_path: Path,
+    management_audit_path: Path,
     cutoff: str = DEFAULT_CUTOFF,
 ) -> dict[str, Any]:
     benchmark = pd.read_parquet(benchmark_path)
     qualifying = mark_economic_aliases(select_cohort(benchmark, cutoff))
+    qualifying = apply_management_style_audit(qualifying, management_audit_path)
     qualifying = enrich_comparable_metrics(qualifying, market_root, cash_path)
-    selected = qualifying[qualifying["analysis_primary"]].copy().reset_index(drop=True)
+    selected = qualifying[
+        qualifying["analysis_primary"]
+        & qualifying["management_style"].ne("not_applicable_security")
+    ].copy().reset_index(drop=True)
     group_summaries = build_group_summaries(selected)
     curve, group_curve, curve_diagnostics = build_common_period_curves(selected, market_root, cutoff)
     universe_manifest = json.loads(universe_manifest_path.read_text(encoding="utf-8"))
@@ -454,11 +529,19 @@ def run(
     summary = {
         "study_version": STUDY_VERSION,
         "taxonomy_version": TAXONOMY_VERSION,
+        "management_evidence_version": MANAGEMENT_EVIDENCE_VERSION,
         "generated_at": utc_now(),
         "cutoff": cutoff,
         "minimum_daily_returns": MIN_RETURN_OBSERVATIONS,
         "qualifying_series_count": int(len(qualifying)),
         "alias_series_consolidated": int((~qualifying["analysis_primary"]).sum()),
+        "economic_products_after_alias_consolidation": int(qualifying["analysis_primary"].sum()),
+        "non_etf_securities_excluded_after_review": int(
+            (
+                qualifying["analysis_primary"]
+                & qualifying["management_style"].eq("not_applicable_security")
+            ).sum()
+        ),
         "cohort_count": int(len(selected)),
         "current_listing_count": int(selected["current_listing"].sum()),
         "historical_identity_count": int((~selected["current_listing"]).sum()),
@@ -503,10 +586,10 @@ def run(
             "cost_treatment": "Buy & Hold comparison; no fictitious switching cost under section 7",
         },
         "limitations": [
-            "Free Yahoo metadata does not provide a complete authoritative active/passive flag.",
+            "Management-style evidence is point-in-time and mandate changes require segmented analysis.",
             "The 67 non-current identities all retain prices into July/August 2026 and are not a representative sample of long-dead products; survivorship bias remains material.",
             "SPY is an intentional hurdle, not the economically correct benchmark for every asset class.",
-            "Adj Close is a total-return proxy and may not fully reconstruct all distributions or ETN events.",
+            "Adj Close is a total-return proxy and may not fully reconstruct every distribution or corporate action.",
             "DBF is order-invariant and scale-invariant; it describes signed direction and breadth, not drawdown risk, economic severity, alpha or future performance.",
             "RWM fixes cash as its reference. Substituting a risky benchmark would require a separate beta-neutral residual procedure.",
             "RWM is undefined when relative-wealth Ulcer Index is zero; no artificial denominator floor is imposed.",
@@ -532,6 +615,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("data/external/macro/fred_dff_daily.csv"),
     )
+    parser.add_argument(
+        "--management-audit",
+        type=Path,
+        default=Path("data/processed/studies/etf_universe_1A/management_style_audit.csv"),
+    )
     parser.add_argument("--cutoff", default=DEFAULT_CUTOFF)
     return parser.parse_args()
 
@@ -545,6 +633,7 @@ def main() -> int:
         args.universe_manifest,
         args.market_summary,
         args.cash,
+        args.management_audit,
         args.cutoff,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2, default=str))

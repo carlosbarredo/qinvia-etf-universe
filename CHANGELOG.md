@@ -2,6 +2,18 @@
 
 All notable public changes to this project are documented here.
 
+## 0.2.0 — 2026-09-09
+
+- Updated the market close through 4 September 2026 and published a strict 2,005-product analytical cohort.
+- Added a row-level management-style audit based on SEC N-CEN and documented primary-source overrides.
+- Removed 17 ETNs and other non-ETF securities from performance claims while preserving them in the audit trail.
+- Recomputed the bilingual notebooks and derived evidence: 156 products beat SPY's RWM and 89 beat both RWM and CAGR.
+- Expanded the intentional-management block to 217 products: 25 beat RWM and 12 do so from a majority of tested entry points.
+- Updated the moderate-leverage diagnostic: 11 candidates can match SPY at or below 2× and 8 preserve higher RWM after financing.
+- Externalized all notebook figures into language-specific repository assets.
+- Added publication-integrity tests and a SHA-256 manifest for the notebooks, figures and frozen evidence.
+- Kept the market module importable for local inspection and testing on Windows while retaining the documented WSL acquisition workflow.
+
 ## 0.1.0 — 2026-08-31
 
 - Published the bilingual ETF Universe report and paired notebooks.

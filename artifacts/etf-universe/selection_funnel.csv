@@ -3,6 +3,7 @@ catalogue_identities,9550,identities
 economically_eligible_identities,7149,identities
 eligible_unique_symbols,6399,symbols
 valid_yahoo_parquets,5505,symbols
-comparable_with_spy,4517,symbols
-qualifying_price_series_2022_03_01,2028,symbols
-economic_products_after_alias_consolidation,2023,products
+comparable_with_spy,4527,symbols
+qualifying_price_series_2022_03_01,2027,symbols
+economic_products_after_alias_consolidation,2022,products
+etf_portfolios_after_product_type_review,2005,products

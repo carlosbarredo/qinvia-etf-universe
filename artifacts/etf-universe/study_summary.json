@@ -2,137 +2,141 @@
   "alias_series_consolidated": 5,
   "asset_class_counts": {
     "alternatives": 26,
-    "commodity": 105,
+    "commodity": 99,
     "crypto": 11,
     "currency": 47,
-    "equity": 1358,
+    "equity": 1348,
     "fixed_income": 412,
     "multi_asset": 16,
     "real_estate": 41,
-    "unknown": 7
+    "unknown": 5
   },
   "beat_spy": {
     "cagr": {
-      "count": 213,
-      "rate": 0.10528917449332674
+      "count": 204,
+      "rate": 0.10174563591022444
     },
     "calmar": {
-      "count": 242,
-      "rate": 0.11962432031636185
+      "count": 238,
+      "rate": 0.11870324189526185
     },
     "martin": {
-      "count": 217,
-      "rate": 0.10726643598615918
+      "count": 214,
+      "rate": 0.10673316708229426
     },
     "sortino": {
-      "count": 201,
-      "rate": 0.09935739001482946
+      "count": 195,
+      "rate": 0.09725685785536159
     }
   },
   "beat_spy_all_four": {
-    "count": 59,
-    "rate": 0.0291646070192783
+    "count": 58,
+    "rate": 0.02892768079800499
   },
   "beat_spy_cagr_and_martin": {
-    "count": 81,
-    "rate": 0.04003954522985665
+    "count": 77,
+    "rate": 0.038403990024937655
   },
   "beat_spy_cagr_and_rwm": {
-    "count": 93,
-    "rate": 0.04597132970835393
+    "count": 89,
+    "rate": 0.044389027431421445
   },
   "beat_spy_dbf": {
-    "count": 244,
-    "rate": 0.12061295106277806
+    "count": 240,
+    "rate": 0.11970074812967581
   },
-  "cohort_count": 2023,
-  "current_listing_count": 1956,
+  "cohort_count": 2005,
+  "current_listing_count": 1938,
   "curve_diagnostics": {
-    "common_end": "2026-08-28",
+    "common_end": "2026-09-04",
     "common_start": "2022-03-01",
     "curve_metrics": {
       "etf_mean_all_available": {
-        "annualized_volatility": 0.12577851962986508,
-        "cagr": 0.1000666965945125,
-        "calmar": 0.5385363096189424,
-        "cumulative_return": 0.5349411363501733,
-        "martin": 1.5967502243447524,
-        "max_drawdown": -0.18581234878167774,
-        "observations": 1129,
-        "return_observations": 1128,
-        "sharpe": 0.8240312269621101,
-        "sortino": 1.1907187867100162,
-        "ulcer_index": 0.06266897293568642,
-        "years": 4.492905398468141
+        "annualized_volatility": 0.12607441427942756,
+        "cagr": 0.09867090726963612,
+        "calmar": 0.5296294284604798,
+        "cumulative_return": 0.5289652444252348,
+        "martin": 1.5695890388370617,
+        "max_drawdown": -0.18630178378956674,
+        "observations": 1134,
+        "return_observations": 1133,
+        "sharpe": 0.812153750666828,
+        "sortino": 1.173876016664994,
+        "ulcer_index": 0.06286416687946755,
+        "years": 4.51207074751706
       },
       "etf_mean_fixed_complete": {
-        "annualized_volatility": 0.12558318563293935,
-        "cagr": 0.1000666965945125,
-        "calmar": 0.5399198790686967,
-        "cumulative_return": 0.5349411363501733,
-        "martin": 1.602914893374164,
-        "max_drawdown": -0.18533619611694374,
-        "observations": 1129,
-        "return_observations": 1128,
-        "sharpe": 0.8251186806322798,
-        "sortino": 1.1920785189942165,
-        "ulcer_index": 0.062427953603868734,
-        "years": 4.492905398468141
+        "annualized_volatility": 0.1257658421277229,
+        "cagr": 0.09866027610182626,
+        "calmar": 0.5313032865180566,
+        "cumulative_return": 0.5288984900887927,
+        "martin": 1.5773763620421328,
+        "max_drawdown": -0.18569483495651828,
+        "observations": 1134,
+        "return_observations": 1133,
+        "sharpe": 0.8137613964744852,
+        "sortino": 1.1760561433247207,
+        "ulcer_index": 0.06254707403761067,
+        "years": 4.51207074751706
       },
       "etf_median_all_available": {
-        "annualized_volatility": 0.12505784275007822,
-        "cagr": 0.09905513310558223,
-        "calmar": 0.5145998358486058,
-        "cumulative_return": 0.528609796183585,
-        "martin": 1.539891033070992,
-        "max_drawdown": -0.19248963214734494,
-        "observations": 1129,
-        "return_observations": 1128,
-        "sharpe": 0.8206383748205618,
-        "sortino": 1.2007045377391883,
-        "ulcer_index": 0.06432606657111145,
-        "years": 4.492905398468141
+        "annualized_volatility": 0.1255375045439703,
+        "cagr": 0.09837414907497255,
+        "calmar": 0.5098740841727256,
+        "cumulative_return": 0.5271027172655476,
+        "martin": 1.5277236116031085,
+        "max_drawdown": -0.19293812360474316,
+        "observations": 1134,
+        "return_observations": 1133,
+        "sharpe": 0.8128968129984118,
+        "sortino": 1.189566313350651,
+        "ulcer_index": 0.0643926351126721,
+        "years": 4.51207074751706
       },
       "spy": {
-        "annualized_volatility": 0.17309612601991384,
-        "cagr": 0.15439657943977236,
-        "calmar": 0.6987899598663402,
-        "cumulative_return": 0.9061420253119108,
-        "martin": 2.0869826764965866,
+        "annualized_volatility": 0.17284798475360522,
+        "cagr": 0.15336437467182318,
+        "calmar": 0.6941182609790574,
+        "cumulative_return": 0.9036950453483319,
+        "martin": 2.0774358103021635,
         "max_drawdown": -0.2209484799542688,
-        "observations": 1129,
-        "return_observations": 1128,
-        "sharpe": 0.91905881990092,
-        "sortino": 1.3439348506352629,
-        "ulcer_index": 0.07398076715181823,
-        "years": 4.492905398468141
+        "observations": 1134,
+        "return_observations": 1133,
+        "sharpe": 0.9147953990370615,
+        "sortino": 1.3379281552762363,
+        "ulcer_index": 0.07382388130178438,
+        "years": 4.51207074751706
       }
     },
     "first_observation_more_than_7_days_after_cutoff": [],
-    "fixed_complete_constituents": 1967,
+    "fixed_complete_constituents": 1935,
     "interpretation": "Cross-sectional mean/median of buy-and-hold wealth rebased to 100 at the cutoff; not a daily-rebalanced tradable portfolio. Fixed-complete is the attrition sensitivity.",
-    "loaded_at_cutoff": 2023,
+    "loaded_at_cutoff": 2005,
     "missing_or_empty": [],
-    "requested_constituents": 2023
+    "requested_constituents": 2005
   },
   "cutoff": "2022-03-01",
-  "generated_at": "2026-08-30T08:10:27+00:00",
+  "economic_products_after_alias_consolidation": 2022,
+  "generated_at": "2026-09-09T19:42:28+00:00",
   "historical_identity_count": 67,
   "limitations": [
-    "Free Yahoo metadata does not provide a complete authoritative active/passive flag.",
+    "Management-style evidence is point-in-time and mandate changes require segmented analysis.",
     "The 67 non-current identities all retain prices into July/August 2026 and are not a representative sample of long-dead products; survivorship bias remains material.",
     "SPY is an intentional hurdle, not the economically correct benchmark for every asset class.",
-    "Adj Close is a total-return proxy and may not fully reconstruct all distributions or ETN events.",
+    "Adj Close is a total-return proxy and may not fully reconstruct every distribution or corporate action.",
     "DBF is order-invariant and scale-invariant; it describes signed direction and breadth, not drawdown risk, economic severity, alpha or future performance.",
     "RWM fixes cash as its reference. Substituting a risky benchmark would require a separate beta-neutral residual procedure.",
     "RWM is undefined when relative-wealth Ulcer Index is zero; no artificial denominator floor is imposed.",
     "FRED DFF is an idealised institutional cash accrual benchmark, not a guaranteed retail investable return after fees or taxes."
   ],
+  "management_evidence_version": "management_style_evidence_1.1",
   "management_style_counts": {
-    "active_identified": 128,
-    "index_passive_identified": 413,
-    "not_determined": 1018,
-    "systematic_or_rules_based": 464
+    "active_identified": 204,
+    "index_passive_identified": 1452,
+    "mixed_or_changed_mandate": 11,
+    "non_index_management_identified": 279,
+    "static_exposure_or_trust": 26,
+    "systematic_or_rules_based": 33
   },
   "methodology": {
     "benchmark_alignment": "SPY on exact common sessions for each ETF",
@@ -155,15 +159,16 @@
     "supplementary_descriptor": "Signed Direction–Breadth Factor (DBF±) on daily log returns"
   },
   "minimum_daily_returns": 1008,
-  "qualifying_series_count": 2028,
+  "non_etf_securities_excluded_after_review": 17,
+  "qualifying_series_count": 2027,
   "rwm": {
-    "beat_spy_count": 161,
-    "beat_spy_rate": 0.07958477508650519,
+    "beat_spy_count": 156,
+    "beat_spy_rate": 0.07780548628428928,
     "cash_day_count_basis": "Actual/360",
     "cash_first_date": "1954-07-01",
-    "cash_last_date": "2026-08-27",
+    "cash_last_date": "2026-09-04",
     "cash_reference": "FRED DFF Effective Federal Funds Rate",
-    "finite_score_count": 2023
+    "finite_score_count": 2005
   },
   "study_version": "etf_universe_1A",
   "taxonomy_version": "etf_taxonomy_1.1"

@@ -53,6 +53,16 @@ El proceso actualiza de forma atómica el catálogo, el universo elegible, la co
 
 El histórico diario se ejecuta con `scripts/launch_market_wsl.sh` y se consulta con `scripts/market_status_wsl.sh`. Por defecto, los Parquet grandes se guardan en `.local-wsl/market`; puede apuntarse a un sistema de archivos WSL nativo mediante `QINVIA_MARKET_WORK_ROOT`. En Windows se refleja solo el estado compacto en `runtime/market_collector_status.json`.
 
+Para cerrar una actualización en una sesión concreta sin volver a descargar toda
+la historia, se pasa una fecha inclusiva. Solo se consulta el tramo pendiente de
+las identidades vigentes; los históricos de productos desaparecidos se conservan
+sin alteración:
+
+```bash
+QINVIA_MARKET_WORK_ROOT=/ruta/wsl/nativa scripts/launch_market_wsl.sh \
+  --update-through 2026-09-04
+```
+
 Características operativas:
 
 - Una petición y un Parquet por símbolo único de Yahoo.

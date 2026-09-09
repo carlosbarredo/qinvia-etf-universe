@@ -38,7 +38,11 @@ The taxonomy separates asset class, exposure structure, strategy, sector, theme,
 - concentrated sector or thematic beta;
 - systematic or rules-based exposure;
 - intentional management, including identified active, long/short, market-neutral and alternative processes;
-- unresolved or other cases.
+- non-index management whose discretionary or mechanical implementation is not established;
+- products whose mandate changed during the measured history, kept separate from full-period management attribution;
+- static trusts/exposures and securities for which ETF management style is not applicable.
+
+Management style is assigned for every product in the frozen cohort. SEC Form N-CEN question C.3 is the primary evidence for registered ETFs, linked through ticker, legal series identity and name continuity. A negative `IS_INDEX` response establishes only that the series is not an index fund; it is not treated as proof of discretionary active management. Products outside usable N-CEN coverage and identity conflicts are resolved in a versioned primary-source ledger. The row-level audit preserves the source URL, confidence and rationale for every decision.
 
 A semiconductor or gold-miner ETF can beat SPY because its narrower exposure was favoured during the sample. That is a valid realised result, but it is not treated as demonstrated manager skill.
 
@@ -58,4 +62,4 @@ The ETF dataset does not causally identify flows or estimate each process's capa
 
 ## Reproducibility boundary
 
-The public repository makes code, tests, reports, notebooks and derived research tables inspectable. Raw Yahoo histories and the original FRED file are not redistributed. Reacquiring provider data is required for a full source-to-report rebuild; see [DATA.md](DATA.md).
+The public repository makes code, tests, bilingual notebooks, language-specific figures and derived research tables inspectable. Raw Yahoo histories, SEC N-CEN bulk archives and the original FRED file are not redistributed. Reacquiring provider data is required for a full source-to-publication rebuild; see [DATA.md](DATA.md).

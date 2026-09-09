@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qinvia-etf-universe"
-version = "0.1.0"
+version = "0.2.0"
 description = "Bilingual reproducible study of ETF exposure, intentional management, and performance versus SPY"
 readme = "README.md"
 requires-python = ">=3.10"

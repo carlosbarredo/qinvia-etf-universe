@@ -2,16 +2,16 @@
 
 **A bilingual, reproducible study of ETF exposure, intentional management, and why SPY is so hard to beat.** The project builds an auditable universe from free data, separates narrow beta from products that intentionally manage risk or selection, and compares every mature product with SPY over its own exact common history.
 
-[Study](https://qinvia.com/research/etf-universe-exposure-skill) · [English notebook](notebooks/etf_universe_en.ipynb) · [Spanish notebook](notebooks/etf_universe_es.ipynb) · [Español](README_ES.md) · [Method](METHODS.md) · [Data provenance](DATA.md)
+[Study](https://qinvia.com/research/etf-universe-exposure-skill) · [English notebook](notebooks/etf_universe_en.ipynb) · [Spanish notebook](notebooks/etf_universe_es.ipynb) · [Español](README_ES.md) · [Method](METHODS.md) · [Data provenance](DATA.md) · [Publication manifest](artifacts/etf-universe/publication_manifest.json)
 
 ## Evidence at a glance
 
-The primary cohort contains **2,023 economic products** launched no later than 1 March 2022 after consolidating historical ticker aliases. Each ETF is evaluated from its own first exact common session with SPY through the study endpoint.
+The primary cohort contains **2,005 ETF portfolios and accepted exchange-traded trusts** launched no later than 1 March 2022. Historical ticker aliases are consolidated and 17 ETNs or other non-ETF securities are retained in the audit trail but removed from performance claims. Each product is evaluated from its own first exact common session with SPY through the study endpoint. The data close is **4 September 2026**.
 
-- **8.0%** beat SPY on Relative-Wealth Martin (RWM), the study's primary path-efficiency criterion.
-- **4.6%** beat SPY on both RWM and CAGR.
-- Among **139** products classified as intentional management, **15** beat SPY's RWM and **7** do so from a majority of tested entry points.
-- After matching SPY's terminal return and charging financing, **4 of 5** feasible candidates preserve a higher RWM.
+- **7.8%** beat SPY on Relative-Wealth Martin (RWM), the study's primary path-efficiency criterion.
+- **4.4%** beat SPY on both RWM and CAGR.
+- Among **217** products classified as intentional management, **25** beat SPY's RWM and **12** do so from a majority of tested entry points.
+- After matching SPY's terminal return and charging financing, **8 of 11** feasible candidates preserve a higher RWM.
 
 These results do not establish that every narrow exposure is useless or that every active process lacks skill. They show that exposure, path efficiency, capacity and management intent must be separated before attributing outperformance to skill.
 
@@ -26,19 +26,18 @@ These results do not establish that every narrow exposure is useless or that eve
 
 ## Notebooks and reproducible evidence
 
-The bilingual notebooks are the primary GitHub reading format. They preserve the narrative, formulas, tables, and frozen derived evidence; the long-form editorial edition lives on Qinvia.
+The bilingual notebooks are the primary GitHub publication format. They preserve the narrative, formulas, tables and frozen derived evidence while loading figures from normal, language-specific repository assets.
 
-| Language | Notebook | Editorial edition |
+| Language | Notebook | Qinvia web edition |
 |---|---|---|
-| English | [Open notebook](notebooks/etf_universe_en.ipynb) | [Read on Qinvia](https://qinvia.com/research/etf-universe-exposure-skill) |
-| Español | [Abrir notebook](notebooks/etf_universe_es.ipynb) | [Leer en Qinvia](https://qinvia.com/es/research/etf-universe-exposure-skill) |
+| English | [Open notebook](notebooks/etf_universe_en.ipynb) | [Read online](https://qinvia.com/research/etf-universe-exposure-skill) |
+| Español | [Abrir notebook](notebooks/etf_universe_es.ipynb) | [Leer en la web](https://qinvia.com/es/research/etf-universe-exposure-skill) |
 
 The repository includes derived research tables required to inspect the published counts. It does **not** redistribute raw Yahoo Finance price histories or the original FRED DFF source file. See [DATA.md](DATA.md).
 
 ## Install and test
 
-The acquisition pipeline runs on Linux, WSL and Windows. POSIX file locking is
-used when available; the analytical package and test suite are cross-platform.
+The acquisition pipeline is designed for Linux or WSL because its autonomous collectors use POSIX file locking.
 
 ```bash
 git clone https://github.com/carlosbarredo/qinvia-etf-universe.git
@@ -47,18 +46,20 @@ python -m pip install -e ".[dev,research]"
 python -m pytest
 ```
 
-The tests cover classification, taxonomy, adjusted-history validation, benchmark metrics, DBF descriptors, leverage mechanics and RWM cash-relative calculations.
+The tests cover classification, taxonomy, adjusted-history validation, benchmark metrics, DBF descriptors, leverage mechanics, RWM cash-relative calculations and the integrity of the bilingual public edition.
 
 ## Rebuild the publication
 
 After acquiring the provider data and producing the study tables described in [DATA.md](DATA.md):
 
 ```bash
+python scripts/audit_management_styles.py
 PYTHONPATH=src python -m qinvia_etfs.universe_study
+PYTHONPATH=src python -m qinvia_etfs.leverage_study
 python scripts/build_etf_universe_study.py
 ```
 
-The builder regenerates both notebook editions from one source. Derived public tables live under `artifacts/etf-universe/`.
+The management audit first assigns every product from SEC N-CEN or a documented primary source. The research builder regenerates both languages from one source. This public repository promotes the notebooks and derived evidence; the web edition is maintained separately by Qinvia Web.
 
 ## Scope and limitations
 

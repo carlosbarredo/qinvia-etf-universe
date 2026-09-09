@@ -8,8 +8,9 @@ This repository publishes derived research evidence, not a mirror of the provide
 - **Total-return proxy:** Yahoo Finance daily adjusted close.
 - **Cash:** FRED Effective Federal Funds Rate (`DFF`), accrued on calendar days with no spread under Actual/360 and sampled on ETF sessions.
 - **Benchmark:** SPY, aligned to each product on exact shared trading dates.
+- **Management style:** SEC Form N-CEN C.3, supplemented only where necessary by documented SEC or issuer primary sources.
 
-The study endpoint is 27 August 2026. The maturity cutoff admits economic products launched no later than 1 March 2022. Every admitted product is measured from its own first comparable session; the cutoff does not force a common inception date.
+The study endpoint is 4 September 2026. The maturity cutoff admits economic products launched no later than 1 March 2022. Every admitted product is measured from its own first comparable session; the cutoff does not force a common inception date.
 
 ## Published evidence
 
@@ -17,14 +18,22 @@ The study endpoint is 27 August 2026. The maturity cutoff admits economic produc
 
 - the selected cohort and consolidated ticker aliases;
 - taxonomy and evidence buckets;
+- the row-level management-style audit, including evidence route, confidence and source URL;
 - group summaries and descriptive wealth curves;
 - RWM and DBF leader tables;
 - intentional-management and alternative-strategy subsets;
 - entry-point robustness;
 - fixed-debt leverage, return matching and financing sensitivity;
-- the compact study summary and selection funnel.
+- the compact study summary and selection funnel;
+- a [SHA-256 publication manifest](artifacts/etf-universe/publication_manifest.json) covering both notebooks, every language-specific figure and every frozen evidence file.
 
 These files contain classifications, metrics, aggregated curves or transformed research outputs. They are not the original provider responses.
+
+Rebuild the checksum manifest after intentionally refreshing the public edition:
+
+```bash
+python scripts/build_publication_manifest.py
+```
 
 ## Not redistributed
 
@@ -32,6 +41,7 @@ The repository intentionally excludes:
 
 - raw Yahoo Finance daily price Parquet files;
 - raw or normalized provider metadata snapshots;
+- SEC N-CEN bulk ZIP archives;
 - the original FRED DFF CSV;
 - collector logs, lock files, status files and local runtime state;
 - large intermediate and processed working directories.
@@ -40,7 +50,7 @@ To reproduce from source, run the documented collectors in accordance with each 
 
 ## Quality controls
 
-The frozen run validated **5,505** Parquet files without schema or integrity failures. The market manifest records symbol, row count, first and last dates, file size, SHA-256, attempts and error classification. Historical ticker aliases are consolidated before the 2,023-product cohort is formed.
+The frozen run validated **5,505** Parquet files without schema or integrity failures. The market manifest records symbol, row count, first and last dates, file size, SHA-256, attempts and error classification. The 2,027 qualifying ticker series include five former aliases; consolidation leaves 2,022 economic products. A subsequent product-type review retains 17 non-ETF securities in the audit trail but removes them from the 2,005-product analytical cohort.
 
 The catalogue contains historical identities, but the 67 non-current series observed in the downloaded universe all reach recent dates. They do not constitute a representative sample of liquidations through time. Survivorship bias therefore remains a material limitation rather than a solved problem.
 

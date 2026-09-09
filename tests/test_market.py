@@ -7,6 +7,7 @@ import pandas as pd
 from qinvia_etfs.benchmark import performance_metrics
 from qinvia_etfs.market import (
     load_targets,
+    merge_incremental_history,
     normalize_history,
     order_targets,
     projected_completion,
@@ -89,6 +90,25 @@ class MarketCollectorTests(unittest.TestCase):
     def test_storage_key_is_stable_and_filesystem_safe(self) -> None:
         self.assertEqual(storage_key("ABC-D"), storage_key("ABC-D"))
         self.assertRegex(storage_key("ABC-D"), r"^[A-Z0-9_]+$")
+
+    def test_incremental_merge_overwrites_overlap_and_caps_at_target(self) -> None:
+        existing_raw = pd.DataFrame(
+            {"Close": [10.0, 11.0], "Adj Close": [10.0, 11.0]},
+            index=pd.DatetimeIndex(["2026-09-02", "2026-09-03"], tz="America/New_York"),
+        )
+        incoming_raw = pd.DataFrame(
+            {"Close": [11.5, 12.0, 13.0], "Adj Close": [11.5, 12.0, 13.0]},
+            index=pd.DatetimeIndex(
+                ["2026-09-03", "2026-09-04", "2026-09-08"], tz="America/New_York"
+            ),
+        )
+        result = merge_incremental_history(
+            normalize_history(existing_raw, "TEST"),
+            normalize_history(incoming_raw, "TEST"),
+            pd.Timestamp("2026-09-04").date(),
+        )
+        self.assertEqual(result["session_date"].astype(str).tolist(), ["2026-09-02", "2026-09-03", "2026-09-04"])
+        self.assertEqual(float(result.loc[result.session_date.astype(str) == "2026-09-03", "close"].iloc[0]), 11.5)
 
     def test_eta_uses_fresh_requests_when_resuming(self) -> None:
         projected, completion = projected_completion(

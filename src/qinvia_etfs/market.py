@@ -1,4 +1,4 @@
-"""Download Yahoo daily market history to an immutable Parquet cache."""
+"""Download Yahoo daily market history to an auditable Parquet cache."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ import re
 import statistics
 import time
 from collections import Counter
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -59,6 +59,8 @@ MANIFEST_FIELDS = [
     "historical_identity_count",
     "error_type",
     "error_message",
+    "refresh_status",
+    "update_through",
     "downloaded_at",
 ]
 PRICE_COLUMNS = [
@@ -287,12 +289,28 @@ def read_json(path: Path) -> dict[str, Any]:
         return {}
 
 
-def reusable_result(target: dict[str, Any]) -> dict[str, Any] | None:
+def parse_update_through(value: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("update-through must use YYYY-MM-DD") from error
+
+
+def reusable_result(
+    target: dict[str, Any], update_through: date | None = None
+) -> dict[str, Any] | None:
     symbol = str(target["request_symbol"])
     price_path, metadata_path = paths_for(symbol)
     metadata = read_json(metadata_path) if metadata_path.exists() else {}
     status = metadata.get("status")
     if status == "success" and price_path.exists() and price_path.stat().st_size > 100:
+        if update_through is not None and int(target["current_identity_count"]) > 0:
+            try:
+                last_date = date.fromisoformat(str(metadata.get("last_date", "")))
+            except ValueError:
+                return None
+            if last_date < update_through:
+                return None
         return {**metadata, "status": "skipped_existing"}
     if status == "no_data":
         return {**metadata, "status": "skipped_no_data"}
@@ -317,7 +335,52 @@ def compact_source_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
     return {key: metadata.get(key) for key in keep if metadata.get(key) is not None}
 
 
-def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any]:
+def preserved_refresh_result(
+    previous: dict[str, Any],
+    *,
+    started: float,
+    attempts: int,
+    update_through: date,
+    refresh_status: str,
+    error: Exception | None = None,
+) -> dict[str, Any]:
+    """Keep a valid historical cache when a tail refresh yields no usable bars."""
+    result = {
+        **previous,
+        "status": "success",
+        "duration_seconds": round(time.monotonic() - started, 3),
+        "attempts": attempts,
+        "refresh_status": refresh_status,
+        "update_through": update_through.isoformat(),
+        "last_refresh_at": utc_now(),
+        "refresh_error_type": type(error).__name__ if error else "",
+        "refresh_error_message": str(error)[:1000] if error else "",
+    }
+    return result
+
+
+def merge_incremental_history(existing: Any, incoming: Any, update_through: date) -> Any:
+    """Merge an overlapping Yahoo tail into the immutable full-history schema."""
+    import pandas as pd
+
+    frames = [frame for frame in (existing, incoming) if frame is not None and not frame.empty]
+    if not frames:
+        return pd.DataFrame(columns=PRICE_COLUMNS)
+    merged = pd.concat(frames, ignore_index=True)
+    merged["session_date"] = pd.to_datetime(merged["session_date"], errors="raise").dt.date
+    merged = merged.loc[merged["session_date"] <= update_through, PRICE_COLUMNS]
+    return (
+        merged.sort_values(["session_date", "session_timestamp"])
+        .drop_duplicates("session_date", keep="last")
+        .reset_index(drop=True)
+    )
+
+
+def download_one(
+    target: dict[str, Any],
+    max_attempts: int = 3,
+    update_through: date | None = None,
+) -> dict[str, Any]:
     import yfinance as yf
     from yfinance.exceptions import (
         YFInvalidPeriodError,
@@ -335,6 +398,19 @@ def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any
     price_path, metadata_path = paths_for(symbol)
     previous = read_json(metadata_path)
     prior_attempts = int(previous.get("attempts", 0) or 0)
+    existing = None
+    incremental_start: date | None = None
+    if (
+        update_through is not None
+        and previous.get("status") == "success"
+        and price_path.exists()
+    ):
+        import pandas as pd
+
+        existing = pd.read_parquet(price_path, columns=PRICE_COLUMNS)
+        if not existing.empty:
+            existing_dates = pd.to_datetime(existing["session_date"], errors="raise")
+            incremental_start = (existing_dates.max() - pd.Timedelta(days=14)).date()
     started = time.monotonic()
     last_error: Exception | None = None
 
@@ -345,14 +421,22 @@ def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any
             query_method = "Ticker.history"
             source_metadata: dict[str, Any] = {}
             try:
-                history = ticker.history(
-                    period=query_period,
-                    interval="1d",
-                    auto_adjust=False,
-                    actions=True,
-                    repair=False,
-                    timeout=45,
-                )
+                query_arguments: dict[str, Any] = {
+                    "interval": "1d",
+                    "auto_adjust": False,
+                    "actions": True,
+                    "repair": False,
+                    "timeout": 45,
+                }
+                if incremental_start is not None and update_through is not None:
+                    query_arguments.update(
+                        start=incremental_start.isoformat(),
+                        end=(update_through + timedelta(days=1)).isoformat(),
+                    )
+                    query_period = "incremental"
+                else:
+                    query_arguments["period"] = query_period
+                history = ticker.history(**query_arguments)
                 source_metadata = compact_source_metadata(
                     dict(getattr(ticker, "history_metadata", {}) or {})
                 )
@@ -379,18 +463,27 @@ def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any
                 # metadata. The batch endpoint reads the same Yahoo bars while
                 # avoiding that metadata field.
                 query_method = "yf.download_fallback"
-                history = yf.download(
-                    symbol,
-                    period=query_period,
-                    interval="1d",
-                    auto_adjust=False,
-                    actions=True,
-                    repair=False,
-                    progress=False,
-                    threads=False,
-                    timeout=45,
-                )
+                fallback_arguments: dict[str, Any] = {
+                    "interval": "1d",
+                    "auto_adjust": False,
+                    "actions": True,
+                    "repair": False,
+                    "progress": False,
+                    "threads": False,
+                    "timeout": 45,
+                }
+                if incremental_start is not None and update_through is not None:
+                    fallback_arguments.update(
+                        start=incremental_start.isoformat(),
+                        end=(update_through + timedelta(days=1)).isoformat(),
+                    )
+                else:
+                    fallback_arguments["period"] = query_period
+                history = yf.download(symbol, **fallback_arguments)
             normalized = normalize_history(history, symbol)
+            if update_through is not None:
+                normalized = merge_incremental_history(existing, normalized, update_through)
+                source_metadata = source_metadata or dict(previous.get("source_metadata") or {})
             downloaded_at = utc_now()
             attempts = prior_attempts + local_attempt
             if normalized.empty:
@@ -431,9 +524,23 @@ def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any
                 "downloaded_at": downloaded_at,
                 "source_metadata": source_metadata,
                 "schema_version": SCHEMA_VERSION,
+                "refresh_status": (
+                    "updated_through_target"
+                    if str(normalized["session_date"].iloc[-1]) == update_through.isoformat()
+                    else "preserved_without_target_session"
+                )
+                if update_through is not None
+                else "full_history_download",
+                "update_through": update_through.isoformat() if update_through else "",
                 "query": {
                     "method": query_method,
                     "period": query_period,
+                    "start": incremental_start.isoformat() if incremental_start else "",
+                    "end_exclusive": (
+                        (update_through + timedelta(days=1)).isoformat()
+                        if update_through
+                        else ""
+                    ),
                     "interval": "1d",
                     "auto_adjust": False,
                     "actions": True,
@@ -445,6 +552,18 @@ def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any
         except (YFPricesMissingError, YFTzMissingError, YFTickerMissingError) as error:
             # These are Yahoo's terminal responses for delisted/missing symbols.
             # Retrying them immediately only adds several seconds per dead fund.
+            if existing is not None and not existing.empty and update_through is not None:
+                result = preserved_refresh_result(
+                    previous,
+                    started=started,
+                    attempts=prior_attempts + local_attempt,
+                    update_through=update_through,
+                    refresh_status="preserved_no_new_data",
+                    error=error,
+                )
+                atomic_json(metadata_path, result)
+                logging.info("%s refresh returned no new Yahoo history", symbol)
+                return result
             result = {
                 "request_symbol": symbol,
                 "storage_key": storage_key(symbol),
@@ -483,6 +602,18 @@ def download_one(target: dict[str, Any], max_attempts: int = 3) -> dict[str, Any
                 error_text = str(error).lower()
                 cooldown = 45 if "rate" in error_text or "too many" in error_text else min(20, 2**local_attempt)
                 time.sleep(cooldown + random.random())
+
+    if existing is not None and not existing.empty and update_through is not None:
+        result = preserved_refresh_result(
+            previous,
+            started=started,
+            attempts=prior_attempts + max_attempts,
+            update_through=update_through,
+            refresh_status="preserved_refresh_error",
+            error=last_error,
+        )
+        atomic_json(metadata_path, result)
+        return result
 
     result = {
         "request_symbol": symbol,
@@ -547,6 +678,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--delay", type=float, default=0.35)
     parser.add_argument("--max-attempts", type=int, default=3)
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument(
+        "--update-through",
+        type=parse_update_through,
+        help=(
+            "Incrementally refresh current listings and cap every refreshed series "
+            "at this inclusive YYYY-MM-DD date"
+        ),
+    )
     return parser.parse_args()
 
 
@@ -571,6 +710,7 @@ def main() -> int:
             targets = targets[: args.limit]
         total = len(targets)
         counts: Counter[str] = Counter()
+        refresh_counts: Counter[str] = Counter()
         rows_total = 0
         bytes_total = 0
         request_durations: list[float] = []
@@ -587,14 +727,22 @@ def main() -> int:
                 "pilot_size": min(args.pilot_size, total),
                 "work_root": str(WORK_ROOT),
                 "input_path": str(INPUT_PATH),
+                "update_through": args.update_through.isoformat() if args.update_through else "",
             }
         )
 
         for position, target in enumerate(targets, start=1):
-            reusable = reusable_result(target)
-            result = reusable if reusable is not None else download_one(target, args.max_attempts)
+            reusable = reusable_result(target, args.update_through)
+            result = (
+                reusable
+                if reusable is not None
+                else download_one(target, args.max_attempts, args.update_through)
+            )
             status = str(result["status"])
             counts[status] += 1
+            refresh_status = str(result.get("refresh_status", "") or "")
+            if refresh_status:
+                refresh_counts[refresh_status] += 1
             if reusable is None:
                 request_durations.append(float(result.get("duration_seconds", 0) or 0))
             rows_total += int(result.get("rows", 0) or 0)
@@ -616,6 +764,7 @@ def main() -> int:
                     "projected_total_seconds": round(projected_seconds, 3),
                     "projected_completion_at": projected_at,
                     "counts": dict(counts),
+                    "refresh_counts": dict(refresh_counts),
                     "rows": rows_total,
                     "bytes": bytes_total,
                 }
@@ -632,6 +781,7 @@ def main() -> int:
                 "completed_symbols": position,
                 "current_symbol": target["request_symbol"],
                 "counts": dict(counts),
+                "refresh_counts": dict(refresh_counts),
                 "rows": rows_total,
                 "bytes": bytes_total,
                 "elapsed_seconds": round(elapsed, 3),
@@ -642,13 +792,14 @@ def main() -> int:
                 "fresh_requests": len(request_durations),
                 "pilot": pilot_summary,
                 "work_root": str(WORK_ROOT),
+                "update_through": args.update_through.isoformat() if args.update_through else "",
             }
             update_status(payload)
             if reusable is None and position < total:
                 time.sleep(max(0.0, args.delay))
 
         elapsed = time.monotonic() - started_monotonic
-        failures = counts.get("error", 0)
+        failures = counts.get("error", 0) + refresh_counts.get("preserved_refresh_error", 0)
         final_phase = "completed_with_errors" if failures else "completed"
         update_status(
             {
@@ -661,11 +812,13 @@ def main() -> int:
                 "total_symbols": total,
                 "completed_symbols": total,
                 "counts": dict(counts),
+                "refresh_counts": dict(refresh_counts),
                 "rows": rows_total,
                 "bytes": bytes_total,
                 "elapsed_seconds": round(elapsed, 3),
                 "pilot": pilot_summary,
                 "work_root": str(WORK_ROOT),
+                "update_through": args.update_through.isoformat() if args.update_through else "",
             }
         )
         logging.info("Market collection completed in %.1fs: %s", elapsed, dict(counts))

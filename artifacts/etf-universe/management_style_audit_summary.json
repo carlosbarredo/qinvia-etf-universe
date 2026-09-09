@@ -1,0 +1,71 @@
+{
+  "changed_from_previous": 1500,
+  "changed_previously_assigned": 483,
+  "changed_transitions": {
+    "active_identified -> index_passive_identified": 5,
+    "active_identified -> mixed_or_changed_mandate": 3,
+    "index_passive_identified -> active_identified": 7,
+    "index_passive_identified -> not_applicable_security": 9,
+    "not_determined -> active_identified": 14,
+    "not_determined -> index_passive_identified": 663,
+    "not_determined -> non_index_management_identified": 279,
+    "not_determined -> not_applicable_security": 7,
+    "not_determined -> static_exposure_or_trust": 26,
+    "not_determined -> systematic_or_rules_based": 28,
+    "systematic_or_rules_based -> active_identified": 63,
+    "systematic_or_rules_based -> index_passive_identified": 387,
+    "systematic_or_rules_based -> mixed_or_changed_mandate": 8,
+    "systematic_or_rules_based -> not_applicable_security": 1
+  },
+  "counts_by_confidence": {
+    "high": 1975,
+    "medium": 47
+  },
+  "counts_by_source": {
+    "primary_source_override": 295,
+    "sec_ncen_c3": 1727
+  },
+  "counts_by_style": {
+    "active_identified": 204,
+    "index_passive_identified": 1452,
+    "mixed_or_changed_mandate": 11,
+    "non_index_management_identified": 279,
+    "not_applicable_security": 17,
+    "static_exposure_or_trust": 26,
+    "systematic_or_rules_based": 33
+  },
+  "generated_at": "2026-09-09T19:41:42+00:00",
+  "identity_or_method_review_rows": 95,
+  "input_rows": 2022,
+  "management_evidence_version": "management_style_evidence_1.1",
+  "manual_override_rows": 295,
+  "ncen_zip_count": 8,
+  "ncen_zip_files": [
+    "2024q3_ncen.zip",
+    "2024q4_ncen.zip",
+    "2025q1_ncen.zip",
+    "2025q2_ncen.zip",
+    "2025q3_ncen.zip",
+    "2025q4_ncen.zip",
+    "2026q1_ncen.zip",
+    "2026q2_ncen.zip"
+  ],
+  "output": "data/processed/studies/etf_universe_1A/management_style_audit.csv",
+  "override_ledger": "docs/evidence/management_style_overrides.csv",
+  "previous_counts_by_style": {
+    "active_identified": 128,
+    "index_passive_identified": 413,
+    "not_determined": 1017,
+    "systematic_or_rules_based": 464
+  },
+  "previously_not_determined": 1017,
+  "remaining_not_determined": 0,
+  "resolved_rows": 2022,
+  "semantics": {
+    "mixed_or_changed_mandate": "the downloaded history spans materially different passive/index and active mandates; it must not be attributed wholesale to either cohort",
+    "ncen_index_negative": "non-index status only; active versus rules-based is not inferred without evidence",
+    "ncen_index_yes": "index_passive_identified",
+    "not_applicable_security": "ETNs and other non-ETF securities for which ETF management style is not applicable",
+    "static_exposure_or_trust": "physical, currency, grantor and single-asset trusts without portfolio management"
+  }
+}

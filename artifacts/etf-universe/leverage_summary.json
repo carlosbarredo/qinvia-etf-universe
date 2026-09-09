@@ -2,12 +2,12 @@
   "day_count_basis": 360,
   "financing_benchmark": "FRED DFF daily effective Fed Funds rate",
   "financing_spread": 0.015,
-  "generated_at": "2026-08-30T08:24:22+00:00",
-  "intentional_beat_all_four": 6,
-  "intentional_beat_cagr_and_martin": 8,
-  "intentional_beat_cagr_and_rwm": 9,
-  "intentional_beat_rwm": 15,
-  "intentional_management_count": 139,
+  "generated_at": "2026-09-09T19:42:50+00:00",
+  "intentional_beat_all_four": 9,
+  "intentional_beat_cagr_and_martin": 12,
+  "intentional_beat_cagr_and_rwm": 13,
+  "intentional_beat_rwm": 25,
+  "intentional_management_count": 217,
   "limitations": [
     "The spread is an IBKR-style scenario, not a complete archive of historical IBKR pricing.",
     "The 25% maintenance threshold is illustrative; house and product requirements vary.",
@@ -15,12 +15,12 @@
     "Fixed initial debt avoids fictitious rebalancing but lets leverage drift through time."
   ],
   "maintenance_ratio_is_illustrative": 0.25,
-  "managed_winners_robust_in_majority_rolling_windows": 7,
+  "managed_winners_robust_in_majority_rolling_windows": 12,
   "method": "Fixed margin loan at inception; no leverage rebalancing",
-  "return_match_feasible_and_all_three_risk_better": 1,
-  "return_match_feasible_and_martin_better": 4,
-  "return_match_feasible_and_rwm_better": 4,
-  "return_match_feasible_at_or_below_2x": 5,
-  "risk_efficient_candidate_count": 6,
-  "universe_count": 2023
+  "return_match_feasible_and_all_three_risk_better": 2,
+  "return_match_feasible_and_martin_better": 10,
+  "return_match_feasible_and_rwm_better": 8,
+  "return_match_feasible_at_or_below_2x": 11,
+  "risk_efficient_candidate_count": 12,
+  "universe_count": 2005
 }

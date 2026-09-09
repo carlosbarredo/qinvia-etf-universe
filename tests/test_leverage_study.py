@@ -41,6 +41,39 @@ class LeverageStudyTests(unittest.TestCase):
         )
         self.assertEqual(classify_evidence_bucket(row), "other_or_unresolved")
 
+    def test_non_index_filing_does_not_prove_intentional_management(self) -> None:
+        row = pd.Series(
+            {
+                "management_style": "non_index_management_identified",
+                "primary_strategy": "other_fixed_income",
+                "asset_class_refined": "fixed_income",
+                "exposure_type": "other_fixed_income",
+            }
+        )
+        self.assertEqual(classify_evidence_bucket(row), "non_index_management")
+
+    def test_non_portfolio_security_is_separated(self) -> None:
+        row = pd.Series(
+            {
+                "management_style": "not_applicable_security",
+                "primary_strategy": "other_equity",
+                "asset_class_refined": "equity",
+                "exposure_type": "other_equity",
+            }
+        )
+        self.assertEqual(classify_evidence_bucket(row), "non_fund_security")
+
+    def test_changed_mandate_is_not_attributed_over_the_full_history(self) -> None:
+        row = pd.Series(
+            {
+                "management_style": "mixed_or_changed_mandate",
+                "primary_strategy": "factor_or_style",
+                "asset_class_refined": "equity",
+                "exposure_type": "factor_style_or_income",
+            }
+        )
+        self.assertEqual(classify_evidence_bucket(row), "mixed_mandate_not_attributed")
+
 
 if __name__ == "__main__":
     unittest.main()
