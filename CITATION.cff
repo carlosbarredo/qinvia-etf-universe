@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Barredo Lago
     given-names: Carlos
-version: 0.2.0
+version: 0.2.1
 date-released: 2026-09-09
 url: "https://github.com/carlosbarredo/qinvia-etf-universe"
 repository-code: "https://github.com/carlosbarredo/qinvia-etf-universe"

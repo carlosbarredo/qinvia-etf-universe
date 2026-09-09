@@ -242,7 +242,10 @@ def headline_table(selected: pd.DataFrame, groups: pd.DataFrame) -> pd.DataFrame
         ("Martin", "beat_spy_martin"),
         ("RWM", "beat_spy_rwm_score"),
         ("CAGR + RWM", "beat_spy_cagr_and_rwm"),
-        (tr("Las cuatro a la vez", "All four at once"), "beat_spy_all_four"),
+        (
+            tr("Las cuatro métricas tradicionales", "All four traditional metrics"),
+            "beat_spy_all_four",
+        ),
     ]
     for name, column in definitions:
         beaten = int(selected[column].sum())
@@ -743,7 +746,7 @@ def english_frame(frame: pd.DataFrame) -> pd.DataFrame:
         {
             "Sí": "Yes",
             "No": "No",
-            "Las cuatro a la vez": "All four at once",
+            "Las cuatro métricas tradicionales": "All four traditional metrics",
             "Iguala y conserva RWM": "Matches and preserves RWM",
             "Iguala; pierde RWM": "Matches; loses RWM",
             "Exige más de 2×": "Requires more than 2×",
@@ -884,6 +887,10 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
         },
         limit=15,
     )
+    rwm_notebook = rwm_table.copy()
+    rwm_notebook["Supera CAGR"] = rwm_notebook["Supera CAGR"].map(
+        {True: "Sí", False: "No"}
+    )
 
     dbf_table = prepare_table(
         selected[np.isfinite(selected.dbf_signed)].sort_values("dbf_signed", ascending=False),
@@ -926,6 +933,10 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
         managed_winner_table,
         {"CAGR": lambda x: pct(x), "SPY CAGR": lambda x: pct(x), "RWM": lambda x: fmt(x, 3), "SPY RWM": lambda x: fmt(x, 3), "Supera CAGR": lambda x: "Sí" if bool(x) else "No"},
     )
+    managed_winner_notebook = managed_winner_table.copy()
+    managed_winner_notebook["Supera CAGR"] = managed_winner_notebook[
+        "Supera CAGR"
+    ].map({True: "Sí", False: "No"})
 
     risk_table = prepare_table(
         risk_candidates.sort_values("excess_rwm_score", ascending=False),
@@ -1135,9 +1146,36 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
     managed_four_n = int(managed.beat_spy_all_four.sum())
     managed_rwm_n = int(managed.beat_spy_rwm_score.sum())
     managed_cagr_rwm_n = int((managed.beat_spy_cagr & managed.beat_spy_rwm_score).sum())
+    inferred_dynamic_rwm_n = managed_rwm_n - active_rwm
     risk_candidate_n = len(risk_candidates)
     risk_active_n = int(risk_candidates.management_style.eq("active_identified").sum())
     risk_dynamic_inferred_n = risk_candidate_n - risk_active_n
+    risk_management_mix_es = (
+        f"{risk_active_n} tienen gestión activa identificada y "
+        + (
+            "1 corresponde a una estrategia dinámica inferida"
+            if risk_dynamic_inferred_n == 1
+            else f"{risk_dynamic_inferred_n} corresponden a estrategias dinámicas inferidas"
+        )
+    )
+    risk_management_mix_en = (
+        f"{risk_active_n} have identified active management and "
+        + (
+            "1 is an inferred dynamic strategy"
+            if risk_dynamic_inferred_n == 1
+            else f"{risk_dynamic_inferred_n} are inferred dynamic strategies"
+        )
+    )
+    inferred_dynamic_rwm_label_es = (
+        "estrategia dinámica inferida con RWM"
+        if inferred_dynamic_rwm_n == 1
+        else "estrategias dinámicas inferidas con RWM"
+    )
+    inferred_dynamic_rwm_label_en = (
+        "inferred dynamic strategy · RWM"
+        if inferred_dynamic_rwm_n == 1
+        else "inferred dynamic strategies · RWM"
+    )
     feasible_match_n = int(leverage_meta["return_match_feasible_at_or_below_2x"])
     feasible_martin_n = int(leverage_meta["return_match_feasible_and_martin_better"])
     feasible_rwm_n = int(leverage_meta["return_match_feasible_and_rwm_better"])
@@ -1251,6 +1289,15 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
     ).replace(
         "La taxonomía usa evidencia auditable y deja explícito lo que no puede resolver.",
         "El estilo de gestión está auditado para cada producto mediante SEC N-CEN y fuentes primarias documentadas; no queda ninguna fila sin asignar.",
+    ).replace(
+        "<h3>Clase principal aún no resuelta</h3>",
+        "<h3>Clase de activo aún no resuelta</h3>",
+    ).replace(
+        f"{risk_active_n} tienen gestión activa identificada y {risk_dynamic_inferred_n} son estrategias dinámicas inferidas",
+        risk_management_mix_es,
+    ).replace(
+        "<span>dinámicos inferidos con RWM</span>",
+        f"<span>{inferred_dynamic_rwm_label_es}</span>",
     )
     html_path = output_root / f"{REPORT_BASENAME}.html"
     html_path.write_text(html, encoding="utf-8")
@@ -1267,12 +1314,12 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
         nbformat.v4.new_markdown_cell(f"## 1. Tesis ejecutiva\n\nLas métricas tradicionales se conservan como radiografía. Para decidir quién presenta una trayectoria superior a SPY usamos **RWM como criterio principal** y **CAGR como contexto económico**: **{rwm_n} de {nfmt(cohort)} ({pct(rwm_n/cohort)})** superan el RWM de SPY y **{cagr_rwm_n} ({pct(cagr_rwm_n/cohort)})** superan además su CAGR. De los ganadores RWM, **{clear_beta_rwm_n}** responden a exposición beta identificable y **{managed_evidence_rwm_n}** a gestión intencional.\n\n**Qué mide RWM.** Relative-Wealth Martin calcula el ratio de Martin íntegramente sobre la riqueza del ETF relativa a cash. Relaciona el crecimiento anualizado de esa ventaja con el Ulcer Index de la misma curva: premia ganar terreno frente a cash y penaliza la profundidad y persistencia con que se pierde. Aquí lo usamos para condensar crecimiento y daño relativo en una sola lectura. [Más información sobre RWM en Qinvia Research](https://qinvia.com/es/research/relative-wealth-martin).\n\n" + markdown_table(headline)),
         nbformat.v4.new_markdown_cell(f"## 2. Universo y listón de comparación\n\n<img src=\"{funnel_plot}\" style=\"width:100%\">\n\n- Yahoo Adj Close como proxy de rentabilidad total.\n- SPY alineado a las sesiones exactas de cada ETF.\n- CAGR, Sortino, Calmar, Martin y RWM se conservan en las tablas descriptivas.\n- Las conclusiones frente a SPY usan **Relative-Wealth Martin (RWM)**; CAGR queda como segunda coordenada.\n- Cash: FRED DFF, acumulación diaria sin spread, Actual/360.\n- Primera sesión Yahoo ≤ 01/03/2022 y al menos 1.008 retornos.\n- SPY es el coste de oportunidad del inversor, no el benchmark natural de todas las clases.\n- **Survivorship bias material:** {nfmt(summary['current_listing_count'])} productos actuales y solo {nfmt(summary['historical_identity_count'])} no actuales; no representan una muestra histórica de fondos muertos.\n\n<img src=\"{inception_plot}\" style=\"width:100%\">"),
         nbformat.v4.new_markdown_cell(f"## 3. Exposición no es habilidad\n\n<img src=\"{provenance_plot}\" style=\"width:100%\">\n\nUn sector, tema, país, metal o regla sistemática puede ser una exposición excelente. Que gane ex post demuestra que ese riesgo fue premiado durante la ventana; no demuestra por sí solo selección, timing o control de riesgo del gestor."),
-        nbformat.v4.new_markdown_cell(f"## 4. Gestión activa y dinámica\n\nEl núcleo contiene **{managed_strict_active_n}** productos con gestión activa identificada; se añaden **{managed_dynamic_inferred_n}** alternativas dinámicas no confirmadas como activas. De los **{managed_n}** del bloque ampliado, **{managed_rwm_n}** superan RWM y **{managed_cagr_rwm_n}** superan RWM + CAGR. La intención de gestionar se identifica; la habilidad no se presume.\n\n<img src=\"{managed_plot}\" style=\"width:100%\">\n\n<img src=\"{management_base_rate_plot}\" style=\"width:100%\">\n\n" + markdown_table(managed_winner_table)),
-        nbformat.v4.new_markdown_cell(f"## 5. Candidatos de eficiencia relativa\n\nHay **{risk_candidate_n}** productos del bloque activo/dinámico que superan RWM pero no CAGR: **{risk_active_n}** activos identificados y **{risk_dynamic_inferred_n}** dinámicos inferidos. Son los candidatos a apalancamiento moderado.\n\n" + markdown_table(risk_table)),
+        nbformat.v4.new_markdown_cell(f"## 4. Gestión activa y dinámica\n\nEl núcleo contiene **{managed_strict_active_n}** productos con gestión activa identificada; se añaden **{managed_dynamic_inferred_n}** alternativas dinámicas no confirmadas como activas. De los **{managed_n}** del bloque ampliado, **{managed_rwm_n}** superan RWM y **{managed_cagr_rwm_n}** superan RWM + CAGR. La intención de gestionar se identifica; la habilidad no se presume.\n\n<img src=\"{managed_plot}\" style=\"width:100%\">\n\n<img src=\"{management_base_rate_plot}\" style=\"width:100%\">\n\n" + markdown_table(managed_winner_notebook)),
+        nbformat.v4.new_markdown_cell(f"## 5. Candidatos de eficiencia relativa\n\nHay **{risk_candidate_n}** productos del bloque activo/dinámico que superan RWM pero no CAGR: {risk_management_mix_es}. Son los candidatos a apalancamiento moderado.\n\n" + markdown_table(risk_table)),
         nbformat.v4.new_markdown_cell(f"## 6. Escalera de apalancamiento\n\nSe fija una deuda al inicio y no se rebalancea. La financiación acumula el Effective Federal Funds Rate diario + 1,50%, con Actual/360. No hay rotación ficticia.\n\n<img src=\"{leverage_plot}\" style=\"width:100%\">\n\n" + markdown_table(leverage_table)),
         nbformat.v4.new_markdown_cell(f"## 7. Retorno igualado y coste de financiación\n\n**{feasible_match_n}** candidatos alcanzan el capital final de SPY con ≤ 2× y **{feasible_rwm_n}** conservan un RWM superior después de financiar la deuda. La solución es ex post y diagnóstica, no una regla ejecutable.\n\n### Caminos distintos hacia el mismo capital final\n\n<img src=\"{return_matched_equity_plot}\" style=\"width:100%\">\n\n<img src=\"{return_match_plot}\" style=\"width:100%\">\n\n" + markdown_table(matched_table) + "\n\n### Sensibilidad al margen de financiación\n\n" + markdown_table(sensitivity_table)),
         nbformat.v4.new_markdown_cell(f"## 8. Estabilidad al punto de entrada\n\nDe los {managed_rwm_n} ganadores RWM del bloque gestionado, **{robust_managed_n}** superan el RWM de SPY desde la mayoría de los meses de entrada. Las ventanas de tres años se solapan: es una sensibilidad temporal, no una prueba independiente de persistencia.\n\n<img src=\"{rolling_plot}\" style=\"width:100%\">\n\n" + markdown_table(rolling_table)),
-        nbformat.v4.new_markdown_cell(f"## 9. Síntesis RWM y contraste DBF\n\n<img src=\"{scatter_plot}\" style=\"width:100%\">\n\nRWM decide la comparación con SPY; CAGR mantiene visible la magnitud económica. **{rwm_n} ({pct(rwm_n/cohort)})** productos superan RWM y **{cagr_rwm_n} ({pct(cagr_rwm_n/cohort)})** superan RWM + CAGR. DBF± permanece como descriptor de dirección y breadth; no decide ganadores.\n\n### Mayores ventajas RWM\n\n" + markdown_table(rwm_table, 15) + "\n\n### Mayores perfiles DBF±\n\n" + markdown_table(dbf_table, 10)),
+        nbformat.v4.new_markdown_cell(f"## 9. Síntesis RWM y contraste DBF\n\n<img src=\"{scatter_plot}\" style=\"width:100%\">\n\nRWM decide la comparación con SPY; CAGR mantiene visible la magnitud económica. **{rwm_n} ({pct(rwm_n/cohort)})** productos superan RWM y **{cagr_rwm_n} ({pct(cagr_rwm_n/cohort)})** superan RWM + CAGR. DBF± permanece como descriptor de dirección y breadth; no decide ganadores.\n\n### Mayores ventajas RWM\n\n" + markdown_table(rwm_notebook, 15) + "\n\n### Mayores perfiles DBF±\n\n" + markdown_table(dbf_table, 10)),
         nbformat.v4.new_markdown_cell(f"## 10. Curva común desde el corte\n\n<img src=\"{universe_fan_plot}\" style=\"width:100%\">\n\nEl abanico muestra los percentiles 10–90 y 25–75 de {nfmt(summary['curve_diagnostics']['fixed_complete_constituents'])} productos con cobertura completa.\n\n<img src=\"{curve_plot}\" style=\"width:100%\">\n\nMedia y mediana transversal de capital buy-and-hold. Es una descripción del universo, no una cartera rebalanceada ni una estrategia operable."),
         nbformat.v4.new_markdown_cell(f"## 11. Veredicto Qinvia\n\n- Solo {pct(rwm_n/cohort)} del universo supera el RWM de SPY.\n- Solo {pct(cagr_rwm_n/cohort)} supera RWM + CAGR.\n- La mayoría de ganadores atribuibles refleja beta, no gestión demostrada.\n- {managed_rwm_n} de {managed_n} productos con gestión intencional superan RWM; {robust_managed_n} lo hacen desde la mayoría de puntos de entrada.\n- Al igualar retorno y cobrar financiación, {feasible_rwm_n} de {feasible_match_n} casos alcanzables conservan RWM.\n\n### Capacidad, escala y paradoja del éxito\n\n**Hipótesis compatible con la literatura, no hallazgo causal.** Una explicación posible es que el alfa tenga capacidad finita: los buenos resultados atraen activos gestionados y desplegar posiciones mayores sobre un conjunto limitado de oportunidades puede elevar el impacto de mercado, los costes, las restricciones de liquidez y la competencia. [Berk y Green (2004)](https://doi.org/10.1086/424739) formalizan este equilibrio; [Chen et al. (2004)](https://doi.org/10.1257/0002828043052277) encuentran una relación más adversa en fondos expuestos a acciones pequeñas e ilíquidas, y [Pástor, Stambaugh y Taylor](https://www.nber.org/system/files/working_papers/w19891/w19891.pdf) hallan evidencia fuerte de rendimientos decrecientes a escala de la industria, pero menos concluyente al nivel de cada fondo.\n\nEl contrapunto importa: con operaciones institucionales reales, [Frazzini, Israel y Moskowitz](https://pages.stern.nyu.edu/~afrazzin/pdf/Trading%20Cost%20of%20Asset%20Pricing%20Anomalies%20-%20Frazzini%2C%20Israel%20and%20Moskowitz.pdf) estiman una capacidad muy superior a la supuesta previamente para ciertas estrategias y muestran que una ejecución diseñada para reducir costes puede ampliarla sustancialmente. La capacidad depende del turnover, el horizonte, la liquidez, la amplitud del mercado y la ejecución. Nuestros datos ETF no identifican causalmente el efecto de los flujos ni estiman la capacidad de cada proceso; presentamos el mecanismo como explicación plausible, no como conclusión demostrada.\n\n**Conclusión:** SPY constituye un listón estructuralmente alto: diversificación, ponderación por capitalización, renovación de componentes, liquidez y bajo coste. La industria ofrece miles de narrativas y exposiciones; la evidencia de valor añadido por gestión es mucho más escasa. Complejidad, marca y activos gestionados no sustituyen a la prueba empírica."),
         nbformat.v4.new_markdown_cell("## 12. Límites y fuentes\n\n- SPY no es el benchmark natural de todos los mandatos.\n- El estilo de gestión está asignado en todas las filas mediante SEC N-CEN y fuentes primarias documentadas; otras dimensiones taxonómicas pueden conservar una clase desconocida explícita.\n- El apalancamiento exacto se resuelve ex post.\n- El 25% de mantenimiento es ilustrativo.\n- La cohorte Yahoo no contiene una muestra representativa de ETF muertos; el survivorship bias sigue siendo material.\n- La siguiente prueba causal requiere un benchmark pasivo comparable por exposición para cada gestor.\n\nFuentes de financiación: [IBKR Margin Rates](https://www.interactivebrokers.com/en/trading/margin-rates.php), [IBKR Margin Calculation](https://www.interactivebrokers.com/en/trading/margin-calculation-details.php) y [FRED DFF](https://fred.stlouisfed.org/series/DFF).\n\nLa carpeta `data/` contiene la cohorte, la auditoría de gestión, taxonomía, resultados de apalancamiento, sensibilidad y robustez."),
@@ -1297,6 +1344,10 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
     unresolved_en_html = html_table(unresolved_en)
 
     managed_winner_en = english_frame(managed_winner_table)
+    managed_winner_notebook_en = managed_winner_en.copy()
+    managed_winner_notebook_en["Beats CAGR"] = managed_winner_notebook_en[
+        "Beats CAGR"
+    ].map({True: "Yes", False: "No"})
     managed_winner_en_html = html_table(
         managed_winner_en,
         {
@@ -1357,6 +1408,10 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
         },
     )
     rwm_en = english_frame(rwm_table)
+    rwm_notebook_en = rwm_en.copy()
+    rwm_notebook_en["Beats CAGR"] = rwm_notebook_en["Beats CAGR"].map(
+        {True: "Yes", False: "No"}
+    )
     rwm_en_html = html_table(
         rwm_en,
         {
@@ -1430,6 +1485,15 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
     ).replace(
         "The taxonomy uses auditable evidence and leaves unresolved cases explicit.",
         "Management style is audited for every product using SEC N-CEN and documented primary sources; no row remains unassigned.",
+    ).replace(
+        "<h3>Primary class still unresolved</h3>",
+        "<h3>Primary asset class still unresolved</h3>",
+    ).replace(
+        f"{risk_active_n} have identified active management and {risk_dynamic_inferred_n} are inferred dynamic strategies",
+        risk_management_mix_en,
+    ).replace(
+        "<span>inferred dynamic · RWM</span>",
+        f"<span>{inferred_dynamic_rwm_label_en}</span>",
     )
     html_path_en = output_root / f"{REPORT_BASENAME}_EN.html"
     html_path_en.write_text(html_en, encoding="utf-8")
@@ -1452,12 +1516,12 @@ def build(results_root: Path, output_root: Path, logo_path: Path, icon_path: Pat
         nbformat.v4.new_markdown_cell(f"## 1. Executive thesis\n\nTraditional metrics remain as a diagnostic. To decide which products produced a superior path to SPY, we use **RWM as the primary criterion** and **CAGR as economic context**: **{rwm_n} of {nfmt(cohort)} ({pct(rwm_n/cohort)})** beat SPY's RWM and **{cagr_rwm_n} ({pct(cagr_rwm_n/cohort)})** also beat its CAGR. Of the RWM winners, **{clear_beta_rwm_n}** reflect identifiable beta exposure and **{managed_evidence_rwm_n}** involve intentional management.\n\n**What RWM measures.** Relative-Wealth Martin calculates the Martin ratio entirely on ETF wealth relative to cash. It relates the annualised growth of that advantage to the Ulcer Index of the same curve: gaining ground versus cash is rewarded, while the depth and persistence of losing it are penalised. Here it condenses relative growth and damage into a single reading. [Read more about RWM at Qinvia Research](https://qinvia.com/research/relative-wealth-martin).\n\n" + markdown_table(headline_en)),
         nbformat.v4.new_markdown_cell(f"## 2. Universe and comparison bar\n\n<img src=\"{funnel_plot_en}\" style=\"width:100%\">\n\n- Yahoo Adj Close is used as a total-return proxy.\n- SPY is aligned to the exact sessions of each ETF.\n- CAGR, Sortino, Calmar, Martin and RWM remain in the descriptive tables.\n- Conclusions versus SPY use **Relative-Wealth Martin (RWM)**; CAGR is the second coordinate.\n- Cash: FRED DFF, daily accrual without spread, Actual/360.\n- First Yahoo session ≤ 1 Mar 2022 and at least 1,008 returns.\n- SPY is the investor's opportunity cost, not the natural benchmark for every asset class.\n- **Material survivorship bias:** {nfmt(summary['current_listing_count'])} current products and only {nfmt(summary['historical_identity_count'])} non-current products; they are not a representative history of dead funds.\n\n<img src=\"{inception_plot_en}\" style=\"width:100%\">"),
         nbformat.v4.new_markdown_cell(f"## 3. Exposure is not skill\n\n<img src=\"{provenance_plot_en}\" style=\"width:100%\">\n\nA sector, theme, country, metal or systematic rule may be an excellent exposure. Winning ex post shows that the risk was rewarded during the sample; it does not by itself demonstrate manager selection, timing or risk control."),
-        nbformat.v4.new_markdown_cell(f"## 4. Active and dynamic management\n\nThe core contains **{managed_strict_active_n}** products with identified active management, plus **{managed_dynamic_inferred_n}** dynamic alternatives not confirmed as active. Of the **{managed_n}** products in the extended block, **{managed_rwm_n}** beat RWM and **{managed_cagr_rwm_n}** beat RWM + CAGR. Intent to manage is identified; skill is not presumed.\n\n<img src=\"{managed_plot_en}\" style=\"width:100%\">\n\n<img src=\"{management_base_rate_plot_en}\" style=\"width:100%\">\n\n" + markdown_table(managed_winner_en)),
-        nbformat.v4.new_markdown_cell(f"## 5. Relative-efficiency candidates\n\nThere are **{risk_candidate_n}** products in the active/dynamic block that beat RWM but not CAGR: **{risk_active_n}** identified active products and **{risk_dynamic_inferred_n}** inferred dynamic strategies. These are the candidates for moderate leverage.\n\n" + markdown_table(risk_en)),
+        nbformat.v4.new_markdown_cell(f"## 4. Active and dynamic management\n\nThe core contains **{managed_strict_active_n}** products with identified active management, plus **{managed_dynamic_inferred_n}** dynamic alternatives not confirmed as active. Of the **{managed_n}** products in the extended block, **{managed_rwm_n}** beat RWM and **{managed_cagr_rwm_n}** beat RWM + CAGR. Intent to manage is identified; skill is not presumed.\n\n<img src=\"{managed_plot_en}\" style=\"width:100%\">\n\n<img src=\"{management_base_rate_plot_en}\" style=\"width:100%\">\n\n" + markdown_table(managed_winner_notebook_en)),
+        nbformat.v4.new_markdown_cell(f"## 5. Relative-efficiency candidates\n\nThere are **{risk_candidate_n}** products in the active/dynamic block that beat RWM but not CAGR: {risk_management_mix_en}. These are the candidates for moderate leverage.\n\n" + markdown_table(risk_en)),
         nbformat.v4.new_markdown_cell(f"## 6. Leverage ladder\n\nDebt is fixed at inception and the position is not rebalanced. Financing accrues the daily Effective Federal Funds Rate + 1.50% under Actual/360. No fictional turnover is introduced.\n\n<img src=\"{leverage_plot_en}\" style=\"width:100%\">\n\n" + markdown_table(leverage_en)),
         nbformat.v4.new_markdown_cell(f"## 7. Return matching and financing cost\n\n**{feasible_match_n}** candidates reach SPY's terminal wealth at ≤ 2× and **{feasible_rwm_n}** preserve a higher RWM after financing. The solution is ex post and diagnostic, not an executable rule.\n\n### Different paths to the same terminal wealth\n\n<img src=\"{return_matched_equity_plot_en}\" style=\"width:100%\">\n\n<img src=\"{return_match_plot_en}\" style=\"width:100%\">\n\n" + markdown_table(matched_en) + "\n\n### Financing-spread sensitivity\n\n" + markdown_table(sensitivity_en)),
         nbformat.v4.new_markdown_cell(f"## 8. Entry-point stability\n\nOf the {managed_rwm_n} RWM winners in the managed block, **{robust_managed_n}** beat SPY's RWM from a majority of entry months. The three-year windows overlap: this is temporal sensitivity, not an independent test of persistence.\n\n<img src=\"{rolling_plot_en}\" style=\"width:100%\">\n\n" + markdown_table(rolling_en)),
-        nbformat.v4.new_markdown_cell(f"## 9. RWM synthesis and DBF contrast\n\n<img src=\"{scatter_plot_en}\" style=\"width:100%\">\n\nRWM decides the comparison with SPY; CAGR keeps economic magnitude visible. **{rwm_n} ({pct(rwm_n/cohort)})** products beat RWM and **{cagr_rwm_n} ({pct(cagr_rwm_n/cohort)})** beat RWM + CAGR. DBF± remains a direction-and-breadth descriptor; it does not select winners.\n\n### Largest RWM advantages\n\n" + markdown_table(rwm_en, 15) + "\n\n### Highest DBF± profiles\n\n" + markdown_table(dbf_en, 10)),
+        nbformat.v4.new_markdown_cell(f"## 9. RWM synthesis and DBF contrast\n\n<img src=\"{scatter_plot_en}\" style=\"width:100%\">\n\nRWM decides the comparison with SPY; CAGR keeps economic magnitude visible. **{rwm_n} ({pct(rwm_n/cohort)})** products beat RWM and **{cagr_rwm_n} ({pct(cagr_rwm_n/cohort)})** beat RWM + CAGR. DBF± remains a direction-and-breadth descriptor; it does not select winners.\n\n### Largest RWM advantages\n\n" + markdown_table(rwm_notebook_en, 15) + "\n\n### Highest DBF± profiles\n\n" + markdown_table(dbf_en, 10)),
         nbformat.v4.new_markdown_cell(f"## 10. Common curve from the cutoff\n\n<img src=\"{universe_fan_plot_en}\" style=\"width:100%\">\n\nThe fan displays the 10th–90th and 25th–75th percentiles for {nfmt(summary['curve_diagnostics']['fixed_complete_constituents'])} products with complete coverage.\n\n<img src=\"{curve_plot_en}\" style=\"width:100%\">\n\nCross-sectional mean and median buy-and-hold wealth. This describes the universe; it is neither a rebalanced portfolio nor a tradable strategy."),
         nbformat.v4.new_markdown_cell(f"## 11. Qinvia verdict\n\n- Only {pct(rwm_n/cohort)} of the universe beats SPY's RWM.\n- Only {pct(cagr_rwm_n/cohort)} beats RWM + CAGR.\n- Most attributable winners reflect beta, not demonstrated management skill.\n- {managed_rwm_n} of {managed_n} intentional-management products beat RWM; {robust_managed_n} do so from a majority of entry points.\n- After return matching and financing, {feasible_rwm_n} of {feasible_match_n} feasible cases preserve RWM.\n\n### Capacity, scale and the success paradox\n\n**A literature-consistent hypothesis, not a causal finding.** One possible explanation is that alpha has finite capacity: strong results attract assets under management, and deploying larger positions across a limited opportunity set can increase market impact, costs, liquidity constraints and competition. [Berk and Green (2004)](https://doi.org/10.1086/424739) formalise this equilibrium; [Chen et al. (2004)](https://doi.org/10.1257/0002828043052277) find a more adverse size relationship among funds exposed to small and illiquid stocks, while [Pástor, Stambaugh and Taylor](https://www.nber.org/system/files/working_papers/w19891/w19891.pdf) find strong decreasing returns at the industry level but less conclusive evidence at the individual-fund level.\n\nThe counterpoint matters. Using real institutional trades, [Frazzini, Israel and Moskowitz](https://pages.stern.nyu.edu/~afrazzin/pdf/Trading%20Cost%20of%20Asset%20Pricing%20Anomalies%20-%20Frazzini%2C%20Israel%20and%20Moskowitz.pdf) estimate far greater capacity than previously assumed for some strategies and show that cost-aware execution can expand it substantially. Capacity depends on turnover, horizon, liquidity, market breadth and execution. Our ETF data do not causally identify the effect of flows or estimate the capacity of each process; this mechanism is presented as a plausible explanation, not a demonstrated conclusion.\n\n**Conclusion:** SPY sets a structurally high bar through diversification, capitalisation weighting, constituent renewal, liquidity and low cost. The industry offers thousands of narratives and exposures; evidence of management-added value is far scarcer. Complexity, brand and assets under management do not replace empirical proof."),
         nbformat.v4.new_markdown_cell("## 12. Limits and sources\n\n- SPY is not the natural benchmark for every mandate.\n- Management style is assigned on every row using SEC N-CEN and documented primary-source evidence; other taxonomy dimensions can still retain an explicit unknown class.\n- Exact leverage is solved ex post.\n- The 25% maintenance threshold is illustrative.\n- The Yahoo cohort does not contain a representative history of dead ETFs; survivorship bias remains material.\n- A causal follow-up requires an exposure-matched passive benchmark for every manager.\n\nFinancing sources: [IBKR Margin Rates](https://www.interactivebrokers.com/en/trading/margin-rates.php), [IBKR Margin Calculation](https://www.interactivebrokers.com/en/trading/margin-calculation-details.php) and [FRED DFF](https://fred.stlouisfed.org/series/DFF).\n\nThe `data/` directory contains the cohort, management audit, taxonomy, leverage, sensitivity and robustness outputs."),

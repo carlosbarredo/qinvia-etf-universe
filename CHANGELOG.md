@@ -2,6 +2,13 @@
 
 All notable public changes to this project are documented here.
 
+## 0.2.1 — 2026-09-09
+
+- Corrected the bilingual candidate wording so the singular inferred strategy agrees with the 11 identified-active cases.
+- Renamed the combined legacy score as the four traditional metrics.
+- Localised notebook boolean tables as `Sí/No` in Spanish and `Yes/No` in English.
+- Added regression checks so these editorial defects cannot silently return.
+
 ## 0.2.0 — 2026-09-09
 
 - Updated the market close through 4 September 2026 and published a strict 2,005-product analytical cohort.

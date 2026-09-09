@@ -1,5 +1,5 @@
 {
-  "edition": "0.2.0",
+  "edition": "0.2.1",
   "published_on": "2026-09-09",
   "data_close": "2026-09-04",
   "languages": [
@@ -72,7 +72,7 @@
     "assets/figures/etf-universe/es/rwm-cagr-scatter.png": "62e51d4ee943437c5b93fd9e6f5e07e39e190880a2e76bbaa659e40ed886f691",
     "assets/figures/etf-universe/es/universe-fan.png": "bc032d3d5042976c7f97cfaecdb1f52f9ca24e9d9686a274745d52e8910ebf83",
     "assets/figures/etf-universe/es/universe-funnel.png": "2e01ab8f73e05718962a6a47ed43260436e84cdad73b670dba9576f38da72dfb",
-    "notebooks/etf_universe_en.ipynb": "6accf2c0727d86e4d33cc3769b9fd1f2118e2a3e85da7697e7b6854b0c0a3390",
-    "notebooks/etf_universe_es.ipynb": "09cf0f98215faf2d733a0fb421af8fbef59df53b304e1dda5d818c32908cbea8"
+    "notebooks/etf_universe_en.ipynb": "52723179b89e36999aa74209a6548ce00adac20f80016e734ce472cd6681dd8b",
+    "notebooks/etf_universe_es.ipynb": "4ca303d44c948a20e332504ceb3198ea75852453566ba36d5c0bf52f514b01a7"
   }
 }

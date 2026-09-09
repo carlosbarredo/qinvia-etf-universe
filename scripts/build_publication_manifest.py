@@ -42,7 +42,7 @@ def build_manifest() -> dict[str, object]:
         (ROOT / "artifacts/etf-universe/leverage_summary.json").read_text(encoding="utf-8")
     )
     return {
-        "edition": "0.2.0",
+        "edition": "0.2.1",
         "published_on": "2026-09-09",
         "data_close": study["curve_diagnostics"]["common_end"],
         "languages": ["en", "es"],

@@ -56,6 +56,29 @@ def test_bilingual_notebooks_are_executed_and_self_consistent() -> None:
                 assert (notebook.parent / target).resolve().is_file(), target
 
 
+def test_bilingual_editorial_labels_are_localised_and_grammatical() -> None:
+    sources: dict[str, str] = {}
+    for language, notebook in NOTEBOOKS.items():
+        payload = json.loads(notebook.read_text(encoding="utf-8"))
+        sources[language] = "\n".join(
+            _cell_source(cell) for cell in payload["cells"] if cell["cell_type"] == "markdown"
+        )
+
+    assert "Las cuatro métricas tradicionales" in sources["es"]
+    assert "11 tienen gestión activa identificada y 1 corresponde" in sources["es"]
+    assert " | True |" not in sources["es"]
+    assert " | False |" not in sources["es"]
+    assert " | Sí |" in sources["es"]
+    assert " | No |" in sources["es"]
+
+    assert "All four traditional metrics" in sources["en"]
+    assert "11 have identified active management and 1 is" in sources["en"]
+    assert " | True |" not in sources["en"]
+    assert " | False |" not in sources["en"]
+    assert " | Yes |" in sources["en"]
+    assert " | No |" in sources["en"]
+
+
 def test_every_figure_has_a_real_language_specific_variant() -> None:
     assert {path.name for path in (FIGURES / "en").glob("*.png")} == FIGURE_NAMES
     assert {path.name for path in (FIGURES / "es").glob("*.png")} == FIGURE_NAMES
@@ -93,7 +116,7 @@ def test_manifest_covers_and_authenticates_the_public_edition() -> None:
     manifest = json.loads(
         (ARTIFACTS / "publication_manifest.json").read_text(encoding="utf-8")
     )
-    assert manifest["edition"] == "0.2.0"
+    assert manifest["edition"] == "0.2.1"
     assert manifest["data_close"] == "2026-09-04"
     assert manifest["headline_counts"]["risk_efficient_candidates"] == 12
     for relative, expected_hash in manifest["files"].items():
